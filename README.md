@@ -276,6 +276,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12â€
 | [ComfyUI Nodes](https://github.com/SamurAIGPT/muapi-comfyui) | 100+ model nodes for ComfyUI image/video pipelines | Clone into `custom_nodes/` |
 | [CLI](https://github.com/SamurAIGPT/muapi-cli) | Generate images, videos & audio from the terminal | `npm install -g muapi-cli` |
 | [Generative Media Skills](https://github.com/SamurAIGPT/Generative-Media-Skills) | AI agent skills for Claude Code, Cursor, Gemini CLI | See repo for install |
+| [iOS App Dev Skills](https://github.com/JasonColapietro/ios-app-dev-skills) | Agent skills and commands for turning generative AI sites, dashboards, PWAs, and content tools into App Store-ready iOS apps | See repo for install |
 
 ---
 
@@ -297,4 +298,3 @@ Base template (auth + billing + webhooks, no AI logic):
 ## ðŸ“„ License
 
 MIT Licensed. Fork it, ship it, sell it.
-
