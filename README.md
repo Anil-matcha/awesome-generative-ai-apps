@@ -129,6 +129,7 @@ Or deploy instantly with the **Deploy to Vercel** button in each template's READ
 - [🤖 AI Agents & Chatbots](#-ai-agents--chatbots)
 - [🎵 Audio & Voice](#-audio--voice)
 - [🔧 Platform Integrations](#-platform-integrations)
+- **[Context Kit](https://github.com/JDDavenport/context-kit)** — Personal Context Artifacts: 4 Markdown templates + 5 Claude Code skills for giving AI agents deep personal context. MIT, one-command install.
 
 ---
 
