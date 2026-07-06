@@ -77,6 +77,8 @@ The margin is high because you're reselling AI compute. The hard parts — billi
 
 AI headshot tools charge $29–$49 per pack. Virtual staging tools charge $29 per image. Video clipping tools charge $49/month. These are not hypothetical — companies built on these exact ideas are doing millions in revenue. The open-source version of their product is right here.
 
+- [ContinueWith](https://continuewith.ai) - Let visitors continue any website page inside ChatGPT, Claude, Gemini, Grok, Perplexity, Mistral, and other AI assistants in one click.
+
 > ⭐ **[Star this repo](https://github.com/Anil-matcha/awesome-generative-ai-apps/stargazers)** to bookmark it — new apps added regularly.
 
 > 🎬 **Using Seedance 2.5?** [awesome-seedance-2.5-api-prompts](https://github.com/Anil-matcha/awesome-seedance-2.5-api-prompts) — Curated prompt templates, MuAPI reference, camera controls, and cinematic examples for Seedance 2.5 video generation.
