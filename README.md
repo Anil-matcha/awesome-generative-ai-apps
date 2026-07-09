@@ -139,6 +139,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 | App | Description | Competing With | Stars |
 |---|---|---|---|
 | [Open Generative AI](./platforms/Open-Generative-AI) · [↗ GitHub](https://github.com/Anil-matcha/Open-Generative-AI) | Open-source AI image & video studio with 200+ models. No content filters. Self-hosted. | Leonardo AI ($60/mo), Krea ($35/mo), OpenArt ($57/mo) | ⭐ 20k+ |
+| [Auferet](https://auferet.com) | AI game master that remembers your world: persistent memory for characters, places, and lore you upload; solo or multiplayer, 5e & Pathfinder 2e | — | — |
 | [Free AI Social Media Scheduler](./platforms/Free-AI-Social-Media-Scheduler) · [↗ GitHub](https://github.com/Anil-matcha/Free-AI-Social-Media-Scheduler) | Self-hostable AI social media scheduler with built-in content generation | Buffer ($18/mo), Hootsuite ($99/mo), Postiz ($42/mo) | ⭐ 420 |
 | [Open AI Design Agent](./platforms/Open-AI-Design-Agent) · [↗ GitHub](https://github.com/Anil-matcha/Open-AI-Design-Agent) | Autonomous multi-step AI design agent for creatives, brand kits, ad creatives | Lovart AI ($30/mo), Galileo AI ($50/mo) | ⭐ 807 |
 | [Open Poe AI](./platforms/Open-Poe-AI) · [↗ GitHub](https://github.com/Anil-matcha/Open-Poe-AI) | Self-hosted multi-model AI chat — GPT, Claude, Gemini, Llama, bring your own keys | Poe AI ($20/mo), ChatGPT Plus ($20/mo) | ⭐ 241 |
