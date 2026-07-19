@@ -11,7 +11,7 @@ export async function DELETE(req, { params }) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const apiKey = config.ai.apiKey;
 
     if (!apiKey) {
@@ -56,7 +56,7 @@ export async function PATCH(req, { params }) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { accountName } = await req.json();
     const apiKey = config.ai.apiKey;
 

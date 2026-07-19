@@ -39,6 +39,27 @@ A free, open-source AI social media scheduler built with Next.js. Upload videos,
 | Threads | 🔜 Coming Soon |
 | Pinterest | 🔜 Coming Soon |
 
+## Optional X/Twitter Research Source
+
+For teams preparing X/Twitter launches before the native X publisher lands,
+[TweetClaw](https://github.com/Xquik-dev/tweetclaw) from Xquik can act as an
+optional OpenClaw source tool. Use it before scheduling to collect reviewed
+public inputs such as search tweets, reply
+examples, creator profiles, follower-export summaries, and media references.
+Keep those findings in your campaign brief or post notes while this scheduler
+continues to own account connection, scheduling, publishing, and post history.
+
+Suggested handoff fields:
+
+| Field | Use |
+|-------|-----|
+| `sourceUrl` | Public X/Twitter URL used as evidence |
+| `sourceText` | Short excerpt or summary for the post brief |
+| `sourceType` | `search`, `reply`, `profile`, `followers`, or `media` |
+| `checkedAt` | Timestamp for the reviewed source |
+
+Xquik is an independent third-party service. Not affiliated with X Corp. "Twitter" and "X" are trademarks of X Corp.
+
 ## Features
 
 - **Video Scheduling** — paste a media URL, pick a platform and time, publish automatically
@@ -117,4 +138,3 @@ Open an issue or submit a pull request. Star the repo to stay updated as new pla
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
