@@ -291,6 +291,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 
 **The market:** ElevenLabs hit $80M ARR in under 3 years and raised at a $3.3B valuation. Murf AI raised $10M. Voice is one of the fastest paths to B2B revenue — companies pay recurring fees for voice APIs that power their own products.
 
+| [CharaVox](https://charavox.com) | AI voice generation platform with character voices, voice cloning, and studio-quality TTS in 6 languages (en/zh/ja/ko/es/pt). Powered by VoxCPM. |
 | Template | Description | Competing With | Demo |
 |---|---|---|---|
 | [My Podcast Studio](./ai_agents/my-podcast) · [↗ GitHub](https://github.com/SamurAIGPT/my-podcast) | AI voiceover and podcast narration with MiniMax Speech 2.6 | ElevenLabs ($5–$99/mo, $80M ARR), Murf AI ($29/mo) | [Demo](https://my-podcast.vercel.app/) |
