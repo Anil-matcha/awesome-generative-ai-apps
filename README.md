@@ -19,6 +19,8 @@ A free, open-source AI social media scheduler built with Next.js. Upload videos,
 
 ## Related Projects
 
+- [MuAPI playground](https://muapi.ai/playground) — Generate the images and videos scheduled by this app.
+- [MuAPI access keys](https://muapi.ai/access-keys) — Create the API key used for generative content.
 - [Awesome-GPT-Image-2-API-Prompts](https://github.com/Anil-matcha/Awesome-GPT-Image-2-API-Prompts) — Curated GPT-Image-2 prompts for generating social media visuals
 - [Open-AI-UGC](https://github.com/Anil-matcha/Open-AI-UGC) — Generate AI UGC video ads to schedule across your social channels
 - [AI-Influencer-Generator](https://github.com/SamurAIGPT/AI-Influencer-Generator) — Create AI influencer content to post on a schedule
@@ -118,4 +120,3 @@ Open an issue or submit a pull request. Star the repo to stay updated as new pla
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
