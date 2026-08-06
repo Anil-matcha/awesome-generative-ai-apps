@@ -201,6 +201,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 | [AI Influencer Generator](https://github.com/SamurAIGPT/AI-Influencer-Generator) | Create and customize a consistent AI influencer / virtual creator | Glambase, Fanvue, Deepagency ($19/mo) | — |
 | [AI VFX](https://github.com/SamurAIGPT/AI-VFX) | Add AI-powered visual effects to videos | Runway ($12–$76/mo), Kaiber ($5–$30/mo) | — |
 | [Open AI Video Editor](https://github.com/Anil-matcha/Open-AI-Video-Editor) | Cross-platform AI-native video editor with an agent-controlled timeline | Descript ($12/mo), Runway ($12/mo) | — |
+| [OrkasVideoStudio](https://github.com/Orkas-AI/Orkas-VideoStudio) | Agent-driven video studio for editable-plan composition, editing, generation, and automatic assembly | Manual FFmpeg and Remotion workflows | — |
 | [Seedance Watermark Remover](https://github.com/SamurAIGPT/seedance-2.0-watermark-remover) | Remove the Seedance 2.0 (AI生成) watermark from videos — no GPU required | Manual editing, paid removers | — |
 
 ---
