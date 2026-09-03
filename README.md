@@ -212,6 +212,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 | [Seedance Watermark Remover](https://github.com/SamurAIGPT/seedance-2.0-watermark-remover) | Remove the Seedance 2.0 (AI生成) watermark from videos — no GPU required | Manual editing, paid removers | — |
 
 ---
+| [MiniMax H3 1K prompt dataset](https://neta.art/use-cases/en/h3-1000-prompt-list) | Curated 1K text-to-video prompts: 3-field structure anatomy, 10 reusable prompts, H3 vs. peer comparison | — | [H3 atlas](https://neta.art/use-cases/en/h3-1000-prompt-list) |
 
 ## 💄 Beauty & Fashion AI
 
