@@ -57,6 +57,7 @@ Each app is a fully working product you can launch under your own name this week
 
 - [ai-creator-academy](https://github.com/Anil-matcha/ai-creator-academy) — free curriculum teaching creators, freelancers, and agencies how to monetize generative AI — the "how to sell" companion to these "what to clone" apps
 - [Open-Generative-AI](https://github.com/Anil-matcha/Open-Generative-AI) — Free open-source studio for 200+ AI image & video models
+- [awesome-gpt-6-astra](https://github.com/Anil-matcha/awesome-gpt-6-astra) — Evidence-backed GPT-6 Astra workflows, Responses API patterns, coding-agent prompts, evaluations, and safety notes — the model-focused companion to these application templates
 
 ---
 
@@ -98,6 +99,8 @@ AI headshot tools charge $29–$49 per pack. Virtual staging tools charge $29 pe
 > 🎬 **Using Seedance 2.5?** [awesome-seedance-2.5-api-prompts](https://github.com/Anil-matcha/awesome-seedance-2.5-api-prompts) — Curated prompt templates, MuAPI reference, camera controls, and cinematic examples for Seedance 2.5 video generation.
 
 > 🍌 **Running Claude Fable 5?** [awesome-claude-fable-5](https://github.com/Anil-matcha/awesome-claude-fable-5) — 60 curated use cases + **20% off** via [MuAPI](https://muapi.ai/pricing?utm_source=github&utm_medium=readme&utm_campaign=awesome-generative-ai-apps).
+
+> 🧠 **Building with GPT-6 Astra?** [awesome-gpt-6-astra](https://github.com/Anil-matcha/awesome-gpt-6-astra) — Evidence-backed workflows, Responses API patterns, coding-agent prompts, evaluations, and safety notes.
 
 > 🧩 **Powering an app?** Browse the [MuAPI model catalog](https://muapi.ai/docs/models?utm_source=github&utm_medium=readme&utm_campaign=awesome-generative-ai-apps) or follow the [API quick start](https://muapi.ai/docs/quick-start?utm_source=github&utm_medium=readme&utm_campaign=awesome-generative-ai-apps) to connect image, video, audio, and text generation.
 
