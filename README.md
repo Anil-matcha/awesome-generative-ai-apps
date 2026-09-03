@@ -210,6 +210,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 | [AI VFX](https://github.com/SamurAIGPT/AI-VFX) | Add AI-powered visual effects to videos | Runway ($12–$76/mo), Kaiber ($5–$30/mo) | — |
 | [Open AI Video Editor](https://github.com/Anil-matcha/Open-AI-Video-Editor) | Cross-platform AI-native video editor with an agent-controlled timeline | Descript ($12/mo), Runway ($12/mo) | — |
 | [Seedance Watermark Remover](https://github.com/SamurAIGPT/seedance-2.0-watermark-remover) | Remove the Seedance 2.0 (AI生成) watermark from videos — no GPU required | Manual editing, paid removers | — |
+| [AIVideoAdherenceGate](https://github.com/madebysaira/AIVideoAdherenceGate) | Offline post-render semantic + motion health gate for AI video (motion, morph-drift, lip-sync) — run it on generated clips before delivery to catch static/morphed/desynced renders | Manual re-renders / no pre-delivery QA | — |
 
 ---
 
