@@ -63,7 +63,7 @@ export async function GET(req) {
 
       // 2. Fetch first-party accounts (connected under the developer's key)
       try {
-        const devRes = await fetch("https://api.muapi.ai/api/social/accounts", {
+        const devRes = await fetch("https://muapi.ai/api/social/accounts", {
           headers: { "x-api-key": apiKey }
         });
         if (devRes.ok) {

@@ -101,7 +101,7 @@ export default function IntegrationsPage() {
 
   useEffect(() => {
     // Fetch interest counts from MuAPI public endpoint
-    fetch("https://api.muapi.ai/api/social/integration-interest-counts")
+    fetch("https://muapi.ai/api/social/integration-interest-counts")
       .then((res) => res.json())
       .then((data) => setInterestCounts(data || {}))
       .catch(() => {});
@@ -273,7 +273,7 @@ export default function IntegrationsPage() {
       }));
 
       // Call MuAPI (ignore errors due to session auth requirement)
-      await fetch("https://api.muapi.ai/api/social/integration-interest", {
+      await fetch("https://muapi.ai/api/social/integration-interest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ platform_name: platform.name })

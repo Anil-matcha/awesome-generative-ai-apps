@@ -23,7 +23,7 @@ export async function DELETE(req, { params }) {
       });
 
       if (!res.ok) {
-        res = await fetch(`https://api.muapi.ai/api/social/accounts/${id}`, {
+        res = await fetch(`https://muapi.ai/api/social/accounts/${id}`, {
           method: "DELETE",
           headers: { "x-api-key": apiKey }
         });
@@ -68,7 +68,7 @@ export async function PATCH(req, { params }) {
       });
 
       if (!res.ok) {
-        res = await fetch(`https://api.muapi.ai/api/social/accounts/${id}`, {
+        res = await fetch(`https://muapi.ai/api/social/accounts/${id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

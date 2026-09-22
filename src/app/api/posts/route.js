@@ -113,14 +113,33 @@ export async function GET(req) {
 
     // 2. Trigger Due Scheduled Posts
     const duePosts = posts.filter(p => p.status === "scheduled" && new Date(p.scheduledAt) <= now);
+    
+    // Pre-fetch connected accounts if any due post has a dummy or missing accountId
+    let devAccounts = null;
+    if (duePosts.some(p => !p.accountId || p.accountId === 101) && config.ai.apiKey) {
+      try {
+        const accRes = await fetch("https://muapi.ai/api/social/accounts", {
+          headers: { "x-api-key": config.ai.apiKey }
+        });
+        if (accRes.ok) devAccounts = await accRes.json();
+      } catch (_) {}
+    }
+
     for (const post of duePosts) {
       try {
         // Deduct 1 credit for publishing
         await UserService.deductCredits(userId, config.ai.generationCost);
         
+        let targetAccountId = post.accountId;
+        if ((!targetAccountId || targetAccountId === 101) && devAccounts) {
+          const normPlat = (post.platform || "").toLowerCase().replace("x_twitter", "x").replace("twitter", "x");
+          const matched = devAccounts.find(a => (a.platform_name || "").toLowerCase() === normPlat);
+          if (matched) targetAccountId = matched.id;
+        }
+
         // Trigger post
         const requestId = await triggerMuApiPublish(post.platform, {
-          accountId: post.accountId,
+          accountId: targetAccountId,
           mediaUrl: post.mediaUrl,
           title: post.title,
           description: post.description,
@@ -136,6 +155,7 @@ export async function GET(req) {
         await prisma.scheduledPost.update({
           where: { id: post.id },
           data: {
+            accountId: targetAccountId,
             status: "processing",
             requestId: requestId
           }
@@ -282,10 +302,33 @@ export async function POST(req) {
     }
 
     const createdPosts = [];
+    const platformAccountMap = body.platformAccountMap || {};
+
+    let devAccounts = [];
+    if (config.ai.apiKey) {
+      try {
+        const accRes = await fetch("https://muapi.ai/api/social/accounts", {
+          headers: { "x-api-key": config.ai.apiKey }
+        });
+        if (accRes.ok) devAccounts = await accRes.json();
+      } catch (_) {}
+    }
 
     for (const plat of targetPlatforms) {
-      const platAccountName = accountName || `${plat} Account`;
-      const platAccountId = parseInt(accountId) || 101;
+      const normPlat = plat.toLowerCase().replace("x_twitter", "x").replace("twitter", "x");
+      let platAccountId = platformAccountMap[plat] || platformAccountMap[normPlat];
+      let platAccountName = accountName;
+
+      if (!platAccountId || platAccountId === 101) {
+        const matched = devAccounts.find(a => (a.platform_name || "").toLowerCase() === normPlat);
+        if (matched) {
+          platAccountId = matched.id;
+          platAccountName = matched.account_name || platAccountName;
+        }
+      }
+
+      platAccountId = parseInt(platAccountId) || 101;
+      platAccountName = platAccountName || `${plat} Account`;
 
       if (isScheduled) {
         try {
@@ -338,7 +381,9 @@ export async function POST(req) {
           await UserService.deductCredits(userId, costPerPost);
         } catch (e) {}
 
-        let requestId = "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+        let requestId = null;
+        let publishError = null;
+
         if (config.ai.apiKey && !config.ai.apiKey.includes("your_")) {
           try {
             requestId = await triggerMuApiPublish(plat, {
@@ -360,9 +405,13 @@ export async function POST(req) {
               replySettings
             });
           } catch (pubErr) {
-            console.warn(`[IMMEDIATE_PUBLISH_ERR] Failed for ${plat}:`, pubErr.message);
+            console.error(`[IMMEDIATE_PUBLISH_ERR] Failed for ${plat}:`, pubErr.message);
+            publishError = pubErr.message;
           }
         }
+
+        const postStatus = publishError ? "failed" : (requestId ? "processing" : "completed");
+        const finalRequestId = requestId || ("req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6));
 
         try {
           const post = await prisma.scheduledPost.create({
@@ -382,8 +431,9 @@ export async function POST(req) {
               categoryId: categoryId || null,
               madeForKids: !!madeForKids,
               scheduledAt: new Date(),
-              status: "processing",
-              requestId: requestId
+              status: postStatus,
+              requestId: finalRequestId,
+              error: publishError
             }
           });
           createdPosts.push(post);
@@ -400,8 +450,9 @@ export async function POST(req) {
             tags: tags || "",
             privacy: privacy || "public",
             scheduledAt: new Date().toISOString(),
-            status: "completed",
-            requestId: requestId,
+            status: postStatus,
+            requestId: finalRequestId,
+            error: publishError,
             publishedUrl: `https://${plat}.com/sample_post`
           });
           createdPosts.push(post);

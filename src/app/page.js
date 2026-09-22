@@ -26,6 +26,7 @@ export default function WorkspaceDashboard() {
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [connectedAccounts, setConnectedAccounts] = useState([]);
 
   // Composer Modal State
   const [composerOpen, setComposerOpen] = useState(false);
@@ -53,11 +54,25 @@ export default function WorkspaceDashboard() {
     }
   }, []);
 
+  // Fetch real connected accounts
+  const fetchAccounts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/social/accounts");
+      if (res.ok) {
+        const data = await res.json();
+        setConnectedAccounts(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.warn("Error fetching accounts:", err);
+    }
+  }, []);
+
   useEffect(() => {
     if (status === "authenticated") {
       fetchPosts();
+      fetchAccounts();
     }
-  }, [status, fetchPosts]);
+  }, [status, fetchPosts, fetchAccounts]);
 
   // Handlers for Calendar Actions
   const handleDateClick = (date) => {
@@ -107,6 +122,30 @@ export default function WorkspaceDashboard() {
       }
     } catch (err) {
       console.error("Failed to delete post:", err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePublishNow = async (postId) => {
+    try {
+      setActionLoading(true);
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "publish_now" })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setViewingPost(updated);
+        fetchPosts();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to publish post.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error publishing post");
     } finally {
       setActionLoading(false);
     }
@@ -285,13 +324,25 @@ export default function WorkspaceDashboard() {
                 <span className="text-[11px] font-semibold text-zinc-400 tracking-wider uppercase">
                   CONNECTED CHANNELS
                 </span>
-                <p className="text-2xl font-bold text-purple-500 font-mono">
-                  {uniqueChannels}
-                </p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-2xl font-bold text-purple-500 font-mono">
+                    {connectedAccounts.length > 0 ? connectedAccounts.length : uniqueChannels}
+                  </p>
+                  <Link
+                    href="/integrations"
+                    className="text-[11px] font-medium text-purple-400 hover:text-purple-300 hover:underline"
+                  >
+                    + Add
+                  </Link>
+                </div>
               </div>
-              <div className="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xs shadow-sm shadow-purple-500/20">
+              <Link
+                href="/integrations"
+                className="w-8 h-8 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xs shadow-sm shadow-purple-500/20 transition-colors"
+                title="Manage Connected Channels"
+              >
                 <FaShareAlt />
-              </div>
+              </Link>
             </div>
 
             {/* Card 4: Credits Balance */}
@@ -398,6 +449,14 @@ export default function WorkspaceDashboard() {
               </span>
             </div>
 
+            {/* Error Banner if any */}
+            {viewingPost.error && (
+              <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-start gap-2">
+                <FaExclamationTriangle className="text-red-400 text-xs shrink-0 mt-0.5" />
+                <span className="leading-normal">{viewingPost.error}</span>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-1">
               <button
@@ -410,6 +469,17 @@ export default function WorkspaceDashboard() {
               </button>
 
               <div className="flex items-center gap-2">
+                {viewingPost.status !== "completed" && (
+                  <button
+                    type="button"
+                    disabled={actionLoading}
+                    onClick={() => handlePublishNow(viewingPost.id)}
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors flex items-center gap-1.5 cursor-pointer shadow-md shadow-blue-600/25 active:scale-95 disabled:opacity-50"
+                  >
+                    <FaBolt className="text-[10px]" />
+                    <span>{actionLoading ? "Publishing..." : "Publish Now"}</span>
+                  </button>
+                )}
                 {viewingPost.publishedUrl && (
                   <a
                     href={viewingPost.publishedUrl}
@@ -423,7 +493,7 @@ export default function WorkspaceDashboard() {
                 <button
                   type="button"
                   onClick={() => handleEditPost(viewingPost)}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/25 active:scale-95"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-200 bg-zinc-800 hover:bg-zinc-700 transition-colors flex items-center gap-1.5 cursor-pointer active:scale-95"
                 >
                   <FiEdit2 /> Edit
                 </button>

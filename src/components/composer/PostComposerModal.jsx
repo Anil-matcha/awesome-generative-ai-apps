@@ -10,7 +10,8 @@ import {
   FaChevronDown, 
   FaChevronUp,
   FaCheck,
-  FaMagic
+  FaMagic,
+  FaPlus
 } from "react-icons/fa";
 import { FaXTwitter, FaThreads } from "react-icons/fa6";
 import { SiTiktok } from "react-icons/si";
@@ -23,7 +24,10 @@ import {
   FiSend, 
   FiLink,
   FiCheckCircle,
-  FiInfo
+  FiInfo,
+  FiPlus,
+  FiExternalLink,
+  FiRefreshCw
 } from "react-icons/fi";
 import LiveDevicePreview from "./LiveDevicePreview";
 import AiPostWriter from "./AiPostWriter";
@@ -38,6 +42,28 @@ const PLATFORMS = [
   { key: "threads", name: "Threads", Icon: FaThreads, color: "text-purple-400", activeStyle: "bg-purple-500/15 border-purple-400/60 text-white shadow-sm shadow-purple-500/20", limit: 500 },
   { key: "pinterest", name: "Pinterest", Icon: FaPinterest, color: "text-rose-500", activeStyle: "bg-rose-500/15 border-rose-500/60 text-white shadow-sm shadow-rose-500/20", limit: 500 },
 ];
+
+const getPlatformKey = (acc) => {
+  if (!acc) return "";
+  const pName = (acc.platform_name || "").toLowerCase();
+  if (pName === "x" || pName === "twitter") return "x_twitter";
+  if (pName === "youtube") return "youtube";
+  if (pName === "tiktok") return "tiktok";
+  if (pName === "instagram") return "instagram";
+  if (pName === "facebook") return "facebook";
+  if (pName === "linkedin") return "linkedin";
+  if (pName === "threads") return "threads";
+  if (pName === "pinterest") return "pinterest";
+  if (acc.platform === 1) return "youtube";
+  if (acc.platform === 2) return "tiktok";
+  if (acc.platform === 3) return "instagram";
+  if (acc.platform === 4) return "x_twitter";
+  if (acc.platform === 5) return "facebook";
+  if (acc.platform === 6) return "linkedin";
+  if (acc.platform === 7) return "threads";
+  if (acc.platform === 8) return "pinterest";
+  return pName;
+};
 
 const YOUTUBE_CATEGORIES = [
   { label: "People & Blogs", value: "22" },
@@ -63,6 +89,8 @@ export default function PostComposerModal({
 }) {
   const [selectedPlatforms, setSelectedPlatforms] = useState(["youtube"]);
   const [activePreviewPlatform, setActivePreviewPlatform] = useState("youtube");
+  const [connectedAccounts, setConnectedAccounts] = useState([]);
+  const [platformAccountMap, setPlatformAccountMap] = useState({});
   const [accountName, setAccountName] = useState("Creator Studio");
   const [accountId, setAccountId] = useState("101");
   const [title, setTitle] = useState("");
@@ -70,6 +98,13 @@ export default function PostComposerModal({
   const [tags, setTags] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [privacy, setPrivacy] = useState("public");
+
+  // Add Channel Modal states
+  const [addChannelModalOpen, setAddChannelModalOpen] = useState(false);
+  const [connectingPlatform, setConnectingPlatform] = useState(null);
+  const [accountNameInput, setAccountNameInput] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectError, setConnectError] = useState("");
 
   const togglePlatform = (key) => {
     setSelectedPlatforms((prev) => {
@@ -88,7 +123,14 @@ export default function PostComposerModal({
   };
 
   const selectAllPlatforms = () => {
-    setSelectedPlatforms(PLATFORMS.map((p) => p.key));
+    const connectedKeys = Array.from(new Set(connectedAccounts.map(getPlatformKey))).filter((k) =>
+      PLATFORMS.some((p) => p.key === k)
+    );
+    if (connectedKeys.length > 0) {
+      setSelectedPlatforms(connectedKeys);
+    } else {
+      setSelectedPlatforms(PLATFORMS.map((p) => p.key));
+    }
   };
 
   const selectSinglePlatform = (key) => {
@@ -162,9 +204,112 @@ export default function PostComposerModal({
       tomorrow.setDate(tomorrow.getDate() + 1);
       setScheduledDate(tomorrow.toISOString().split("T")[0]);
       setScheduledTime("12:00");
-      setIsScheduled(true);
+      setIsScheduled(false); // Default to Post Now for new posts
     }
   }, [initialDate, initialPost, isOpen]);
+
+  // Fetch user's real connected accounts from backend
+  const fetchAccounts = () => {
+    fetch("/api/social/accounts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setConnectedAccounts(data);
+          const accMap = {};
+          data.forEach((acc) => {
+            const key = getPlatformKey(acc);
+            if (!accMap[key]) {
+              accMap[key] = acc.id;
+            }
+          });
+          setPlatformAccountMap((prev) => ({ ...accMap, ...prev }));
+
+          // Automatically select connected channels if current selection is invalid or new post
+          if (!initialPost) {
+            const connectedKeys = Array.from(new Set(data.map(getPlatformKey))).filter((k) =>
+              PLATFORMS.some((p) => p.key === k)
+            );
+            if (connectedKeys.length > 0) {
+              setSelectedPlatforms((prev) => {
+                const valid = prev.filter((k) => connectedKeys.includes(k));
+                return valid.length > 0 ? valid : [connectedKeys[0]];
+              });
+              setActivePreviewPlatform((prev) => (connectedKeys.includes(prev) ? prev : connectedKeys[0]));
+            }
+          }
+        }
+      })
+      .catch((err) => console.error("Failed to fetch accounts in composer:", err));
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchAccounts();
+    }
+  }, [isOpen, initialPost]);
+
+  // Synchronize accountId and accountName for the currently active preview platform
+  useEffect(() => {
+    const platAccounts = connectedAccounts.filter((a) => {
+      const normKey = getPlatformKey(a);
+      return normKey === activePreviewPlatform || a.platform === activePreviewPlatform;
+    });
+
+    if (platAccounts.length > 0) {
+      const selectedId = platformAccountMap[activePreviewPlatform] || platAccounts[0].id;
+      const matched = platAccounts.find((a) => a.id === selectedId) || platAccounts[0];
+      setAccountId(String(matched.id));
+      setAccountName(matched.account_name);
+    } else {
+      setAccountId("101");
+      setAccountName("Creator Studio");
+    }
+  }, [activePreviewPlatform, connectedAccounts, platformAccountMap]);
+
+  // Connected vs Unconnected platforms
+  const connectedPlatformKeys = new Set(connectedAccounts.map(getPlatformKey));
+  const connectedPlatforms = PLATFORMS.filter((p) => connectedPlatformKeys.has(p.key));
+  const unconnectedPlatforms = PLATFORMS.filter((p) => !connectedPlatformKeys.has(p.key));
+
+  const handleInitiateConnect = (plat) => {
+    setConnectingPlatform(plat);
+    setAccountNameInput("");
+    setConnectError("");
+  };
+
+  const handleConfirmConnect = async () => {
+    if (!connectingPlatform) return;
+    setIsConnecting(true);
+    setConnectError("");
+
+    const label = accountNameInput.trim();
+    if (connectingPlatform.key === "youtube" && label) {
+      localStorage.setItem("pending_youtube_label", label);
+    }
+
+    try {
+      const res = await fetch("/api/social/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: connectingPlatform.key,
+          accountName: label,
+          redirectUrl: window.location.href,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setConnectError(data.error || "Failed to initiate connection. Please try again.");
+      }
+    } catch (err) {
+      setConnectError(err.message || "Failed to connect to platform.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
 
   const handleApplyAiContent = ({ title: newTitle, description: newDescription, tags: newTags }) => {
     if (newTitle) setTitle(newTitle);
@@ -217,7 +362,7 @@ export default function PostComposerModal({
     }
   };
 
-  const handleSubmit = async (statusOverride = null) => {
+  const handleSubmit = async (statusOverride = null, forceImmediate = false) => {
     if (!mediaUrl) {
       setErrorMsg("Please upload or provide a media URL for your post.");
       return;
@@ -228,7 +373,8 @@ export default function PostComposerModal({
 
     try {
       let combinedScheduledAt = null;
-      if (isScheduled && scheduledDate && scheduledTime) {
+      const willSchedule = forceImmediate ? false : (statusOverride === "draft" ? false : isScheduled);
+      if (willSchedule && scheduledDate && scheduledTime) {
         combinedScheduledAt = new Date(`${scheduledDate}T${scheduledTime}:00`).toISOString();
       }
 
@@ -237,6 +383,7 @@ export default function PostComposerModal({
         platform: activePreviewPlatform,
         accountId: parseInt(accountId) || 101,
         accountName,
+        platformAccountMap,
         title,
         description,
         tags,
@@ -343,8 +490,8 @@ export default function PostComposerModal({
               </div>
             )}
 
-            {/* 1. Channel Selector with Multi-Select */}
-            <div className="space-y-2">
+            {/* 1. Channel Selector with Multi-Select (Connected Channels Only) */}
+            <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
@@ -354,63 +501,160 @@ export default function PostComposerModal({
                     {selectedPlatforms.length} {selectedPlatforms.length === 1 ? "channel" : "channels"} selected
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px]">
-                  <button
-                    type="button"
-                    onClick={selectAllPlatforms}
-                    className="text-blue-400 hover:text-blue-300 font-medium transition-colors cursor-pointer"
-                  >
-                    Select All
-                  </button>
-                  <span className="text-zinc-600">|</span>
-                  <button
-                    type="button"
-                    onClick={() => selectSinglePlatform(activePreviewPlatform)}
-                    className="text-zinc-400 hover:text-zinc-200 font-medium transition-colors cursor-pointer"
-                  >
-                    Only Current
-                  </button>
-                </div>
+                {connectedPlatforms.length > 1 && (
+                  <div className="flex items-center gap-1.5 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={selectAllPlatforms}
+                      className="text-blue-400 hover:text-blue-300 font-medium transition-colors cursor-pointer"
+                    >
+                      Select All
+                    </button>
+                    <span className="text-zinc-600">|</span>
+                    <button
+                      type="button"
+                      onClick={() => selectSinglePlatform(activePreviewPlatform)}
+                      className="text-zinc-400 hover:text-zinc-200 font-medium transition-colors cursor-pointer"
+                    >
+                      Only Current
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {PLATFORMS.map((plat) => {
-                  const Icon = plat.Icon;
-                  const isSelected = selectedPlatforms.includes(plat.key);
-                  const isCurrent = activePreviewPlatform === plat.key;
-                  return (
-                    <div
-                      key={plat.key}
-                      onClick={() => togglePlatform(plat.key)}
-                      className={`relative p-2 rounded-md border flex items-center justify-between gap-1.5 transition-all cursor-pointer select-none ${
-                        isSelected
-                          ? `${plat.activeStyle} ${isCurrent ? "ring-1 ring-white/30" : ""}`
-                          : "border-zinc-800/80 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Icon className={`text-xs shrink-0 ${isSelected ? "text-current" : plat.color}`} />
-                        <span className="text-[11px] truncate font-semibold">
-                          {plat.name}
-                        </span>
+              {connectedPlatforms.length === 0 ? (
+                /* Empty state when no channels are connected */
+                <div className="p-4 rounded-lg border border-dashed border-zinc-800 bg-zinc-900/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                  <div>
+                    <p className="text-xs font-semibold text-zinc-200">No social channels connected yet</p>
+                    <p className="text-[11px] text-zinc-500">Connect your accounts to start scheduling and publishing posts.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAddChannelModalOpen(true)}
+                    className="px-3.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/30 shrink-0 cursor-pointer"
+                  >
+                    <FiPlus className="text-xs font-bold" />
+                    <span>Add Channel</span>
+                  </button>
+                </div>
+              ) : (
+                /* Connected channels grid with + Add Channel button */
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {connectedPlatforms.map((plat) => {
+                    const Icon = plat.Icon;
+                    const isSelected = selectedPlatforms.includes(plat.key);
+                    const isCurrent = activePreviewPlatform === plat.key;
+
+                    // Match connected account details for label
+                    const matchingAccounts = connectedAccounts.filter(a => getPlatformKey(a) === plat.key);
+                    const accountLabel = matchingAccounts.length > 0 ? matchingAccounts[0].account_name : plat.name;
+
+                    return (
+                      <div
+                        key={plat.key}
+                        onClick={() => togglePlatform(plat.key)}
+                        className={`relative p-2.5 rounded-md border flex items-center justify-between gap-2 transition-all cursor-pointer select-none ${
+                          isSelected
+                            ? `${plat.activeStyle} ${isCurrent ? "ring-1 ring-white/30" : ""}`
+                            : "border-zinc-800/80 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="relative shrink-0">
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center ${isSelected ? "bg-white/10" : "bg-zinc-800/80"}`}>
+                              <Icon className={`text-xs ${isSelected ? "text-current" : plat.color}`} />
+                            </div>
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 absolute -bottom-0.5 -right-0.5 ring-2 ring-zinc-950" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-[11px] truncate font-bold text-zinc-100">
+                              {plat.name}
+                            </div>
+                            <div className="text-[10px] truncate text-zinc-400">
+                              {accountLabel}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center shrink-0">
+                          {isSelected ? (
+                            <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center text-[10px] font-bold">
+                              ✓
+                            </span>
+                          ) : (
+                            <span className="w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center" />
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center shrink-0">
-                        {isSelected ? (
-                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 text-white flex items-center justify-center text-[9px] font-bold">
-                            ✓
-                          </span>
-                        ) : (
-                          <span className="w-3.5 h-3.5 rounded-full border border-zinc-700 flex items-center justify-center" />
-                        )}
-                      </div>
+                    );
+                  })}
+
+                  {/* + Add Channel Button (Reference App Style) */}
+                  <button
+                    type="button"
+                    onClick={() => setAddChannelModalOpen(true)}
+                    className="p-2.5 rounded-md border border-dashed border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 flex items-center justify-center gap-2 transition-all cursor-pointer group min-h-[50px]"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-zinc-800 group-hover:bg-zinc-700 flex items-center justify-center text-zinc-300 transition-colors">
+                      <FiPlus className="text-xs font-bold" />
                     </div>
-                  );
-                })}
-              </div>
+                    <span className="text-[11px] font-semibold tracking-wide">
+                      Add Channel
+                    </span>
+                  </button>
+                </div>
+              )}
+
               <p className="text-[10px] text-zinc-500">
-                Click any channel to toggle. Multiple selected channels will be published in a single click.
+                Click any connected channel to toggle. Multiple selected channels will be published in a single click.
               </p>
             </div>
+
+            {/* Connected Account Display & Selector */}
+            {(() => {
+              const activePlatAccounts = connectedAccounts.filter((a) => {
+                const pName = (a.platform_name || "").toLowerCase();
+                const normKey = pName === "x" || pName === "twitter" ? "x_twitter" : pName;
+                return normKey === activePreviewPlatform || a.platform === activePreviewPlatform;
+              });
+
+              return (
+                <div className="p-2.5 rounded-md bg-zinc-900/50 border border-zinc-800 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-zinc-400 text-[11px] font-medium shrink-0">Posting to {currentPlatformInfo.name} as:</span>
+                    {activePlatAccounts.length > 0 ? (
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold truncate">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                        <span className="truncate">{accountName}</span>
+                      </div>
+                    ) : (
+                      <span className="text-amber-400/90 text-[11px] font-medium flex items-center gap-1 truncate">
+                        ⚠️ No account connected in Integrations
+                      </span>
+                    )}
+                  </div>
+
+                  {activePlatAccounts.length > 1 && (
+                    <select
+                      value={accountId}
+                      onChange={(e) => {
+                        const sel = activePlatAccounts.find((a) => String(a.id) === e.target.value);
+                        if (sel) {
+                          setAccountId(String(sel.id));
+                          setAccountName(sel.account_name);
+                          setPlatformAccountMap((prev) => ({ ...prev, [activePreviewPlatform]: sel.id }));
+                        }
+                      }}
+                      className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[11px] text-zinc-200 outline-none shrink-0"
+                    >
+                      {activePlatAccounts.map((a) => (
+                        <option key={a.id} value={a.id}>{a.account_name}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* 2. Post Title */}
             <div className="space-y-1.5">
@@ -847,39 +1091,297 @@ export default function PostComposerModal({
               Save as Draft
             </button>
 
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={() => handleSubmit()}
-              className="px-4 py-1.5 rounded-md text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30 active:scale-95 disabled:opacity-50"
-            >
-              {submitting ? (
-                <>
-                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>
-                    {isScheduled 
-                      ? `Scheduling to ${selectedPlatforms.length} ${selectedPlatforms.length === 1 ? "channel" : "channels"}...` 
-                      : `Publishing to ${selectedPlatforms.length} ${selectedPlatforms.length === 1 ? "channel" : "channels"}...`}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <FiSend className="text-xs" />
-                  <span>
-                    {isScheduled
-                      ? selectedPlatforms.length > 1
-                        ? `Schedule to ${selectedPlatforms.length} Channels`
-                        : "Schedule Post"
-                      : selectedPlatforms.length > 1
+            {isScheduled ? (
+              <>
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleSubmit(null, true)}
+                  className="px-3.5 py-1.5 rounded-md text-xs font-bold text-zinc-200 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <FiSend className="text-xs text-blue-400" />
+                  <span>Publish Now Instead</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleSubmit()}
+                  className="px-4 py-1.5 rounded-md text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30 active:scale-95 disabled:opacity-50"
+                >
+                  {submitting ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Scheduling...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiCalendar className="text-xs" />
+                      <span>
+                        {selectedPlatforms.length > 1
+                          ? `Schedule to ${selectedPlatforms.length} Channels`
+                          : "Schedule Post"}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => handleSubmit()}
+                className="px-4 py-1.5 rounded-md text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30 active:scale-95 disabled:opacity-50"
+              >
+                {submitting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>
+                      Publishing to {selectedPlatforms.length} {selectedPlatforms.length === 1 ? "channel" : "channels"}...
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <FiSend className="text-xs" />
+                    <span>
+                      {selectedPlatforms.length > 1
                         ? `Publish to ${selectedPlatforms.length} Channels Now`
                         : "Publish Now"}
-                  </span>
-                </>
-              )}
-            </button>
+                    </span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Add Channel Modal (Reference App UX & Styling) */}
+      {addChannelModalOpen && (
+        <div 
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            setAddChannelModalOpen(false);
+            setConnectingPlatform(null);
+            setConnectError("");
+          }}
+        >
+          <div 
+            className="relative w-full max-w-xl bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800 bg-zinc-900/60">
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-wide uppercase flex items-center gap-2">
+                  <span>ADD SOCIAL CHANNEL</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                    OAuth 2.0
+                  </span>
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Connect and authorize platforms to schedule and publish posts
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setAddChannelModalOpen(false);
+                  setConnectingPlatform(null);
+                  setConnectError("");
+                }}
+                className="w-7 h-7 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <FiX className="text-sm" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 overflow-y-auto space-y-5">
+              {connectError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/25 rounded-lg text-xs text-red-400 flex items-center gap-2">
+                  <FiInfo className="text-sm shrink-0" />
+                  <span>{connectError}</span>
+                </div>
+              )}
+
+              {connectingPlatform ? (
+                /* Connecting Platform Dialog */
+                <div className="p-4 rounded-lg bg-zinc-900/70 border border-zinc-800 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center shadow-inner">
+                      {(() => {
+                        const Icon = connectingPlatform.Icon;
+                        return <Icon className={`text-xl ${connectingPlatform.color}`} />;
+                      })()}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">
+                        Connect {connectingPlatform.name}
+                      </h4>
+                      <p className="text-[11px] text-zinc-400">
+                        You will be redirected to authorize access.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-semibold text-zinc-300 uppercase tracking-wider block">
+                      Account Label / Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={accountNameInput}
+                      onChange={(e) => setAccountNameInput(e.target.value)}
+                      placeholder={`e.g. My ${connectingPlatform.name} Account`}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
+                    />
+                    <p className="text-[10px] text-zinc-500">
+                      Helps identify this account in your workspace dashboard.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-800/80">
+                    <button
+                      type="button"
+                      onClick={() => setConnectingPlatform(null)}
+                      disabled={isConnecting}
+                      className="px-3.5 py-1.5 rounded-md border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleConfirmConnect}
+                      disabled={isConnecting}
+                      className="px-4 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/30 cursor-pointer disabled:opacity-50"
+                    >
+                      {isConnecting ? (
+                        <>
+                          <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Connecting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Authorize & Connect</span>
+                          <FiExternalLink className="text-xs" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Unconnected Platforms Grid */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                        Available Channels to Connect
+                      </span>
+                      <span className="text-[10px] text-zinc-500">
+                        {unconnectedPlatforms.length} available
+                      </span>
+                    </div>
+
+                    {unconnectedPlatforms.length === 0 ? (
+                      <div className="p-4 rounded-lg bg-zinc-900/40 border border-zinc-800 text-center text-xs text-zinc-400">
+                        All supported channels are currently connected!
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {unconnectedPlatforms.map((plat) => {
+                          const Icon = plat.Icon;
+                          return (
+                            <div
+                              key={plat.key}
+                              onClick={() => handleInitiateConnect(plat)}
+                              className="p-3.5 rounded-lg border border-zinc-800/90 bg-zinc-900/50 hover:bg-zinc-900 hover:border-zinc-700 transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-2.5 group shadow-sm"
+                            >
+                              <div className="w-11 h-11 rounded-full bg-zinc-800/80 group-hover:bg-zinc-800 flex items-center justify-center transition-colors">
+                                <Icon className={`text-xl ${plat.color} group-hover:scale-110 transition-transform`} />
+                              </div>
+                              <div>
+                                <div className="text-xs font-bold text-zinc-200 group-hover:text-white">
+                                  {plat.name}
+                                </div>
+                                <span className="text-[10px] text-blue-400 group-hover:text-blue-300 font-medium inline-flex items-center gap-0.5 mt-0.5">
+                                  + Connect
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Already Connected Platforms */}
+                  {connectedPlatforms.length > 0 && (
+                    <div className="space-y-2.5 pt-3 border-t border-zinc-800/80">
+                      <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
+                        Already Connected Channels
+                      </span>
+                      <div className="space-y-2">
+                        {connectedAccounts.map((acc) => {
+                          const platKey = getPlatformKey(acc);
+                          const platInfo = PLATFORMS.find((p) => p.key === platKey) || { name: acc.platform_name || platKey, Icon: FaCheck, color: "text-zinc-400" };
+                          const Icon = platInfo.Icon;
+
+                          return (
+                            <div
+                              key={acc.id}
+                              className="p-2.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between gap-3 text-xs"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
+                                  <Icon className={`text-xs ${platInfo.color}`} />
+                                </div>
+                                <div className="min-w-0">
+                                  <span className="font-semibold text-zinc-200 block truncate">
+                                    {acc.account_name || `${platInfo.name} Account`}
+                                  </span>
+                                  <span className="text-[10px] text-zinc-500 block">
+                                    {platInfo.name}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  Connected
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleInitiateConnect(platInfo)}
+                                  className="text-[10px] text-zinc-400 hover:text-zinc-200 underline cursor-pointer"
+                                >
+                                  + Add another
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-zinc-800 bg-zinc-900/40 flex items-center justify-between text-xs text-zinc-500">
+              <span>Need to manage existing accounts?</span>
+              <a
+                href="/integrations"
+                className="text-blue-400 hover:text-blue-300 font-medium inline-flex items-center gap-1"
+              >
+                <span>Open Integrations Manager</span>
+                <FiExternalLink className="text-[10px]" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
