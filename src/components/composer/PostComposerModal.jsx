@@ -61,7 +61,8 @@ export default function PostComposerModal({
   initialOpenAiWriter = false,
   onPostSaved,
 }) {
-  const [selectedPlatform, setSelectedPlatform] = useState("youtube");
+  const [selectedPlatforms, setSelectedPlatforms] = useState(["youtube"]);
+  const [activePreviewPlatform, setActivePreviewPlatform] = useState("youtube");
   const [accountName, setAccountName] = useState("Creator Studio");
   const [accountId, setAccountId] = useState("101");
   const [title, setTitle] = useState("");
@@ -69,6 +70,31 @@ export default function PostComposerModal({
   const [tags, setTags] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [privacy, setPrivacy] = useState("public");
+
+  const togglePlatform = (key) => {
+    setSelectedPlatforms((prev) => {
+      if (prev.includes(key)) {
+        if (prev.length === 1) return prev; // keep at least 1 selected
+        const updated = prev.filter((k) => k !== key);
+        if (activePreviewPlatform === key) {
+          setActivePreviewPlatform(updated[0]);
+        }
+        return updated;
+      } else {
+        setActivePreviewPlatform(key);
+        return [...prev, key];
+      }
+    });
+  };
+
+  const selectAllPlatforms = () => {
+    setSelectedPlatforms(PLATFORMS.map((p) => p.key));
+  };
+
+  const selectSinglePlatform = (key) => {
+    setSelectedPlatforms([key]);
+    setActivePreviewPlatform(key);
+  };
 
   // YouTube options
   const [categoryId, setCategoryId] = useState("22");
@@ -111,7 +137,9 @@ export default function PostComposerModal({
 
   useEffect(() => {
     if (initialPost) {
-      setSelectedPlatform(initialPost.platform || "youtube");
+      const initPlat = initialPost.platform || "youtube";
+      setSelectedPlatforms([initPlat]);
+      setActivePreviewPlatform(initPlat);
       setTitle(initialPost.title || "");
       setDescription(initialPost.description || "");
       setTags(initialPost.tags || "");
@@ -145,10 +173,9 @@ export default function PostComposerModal({
     setAiWriterOpen(false);
   };
 
-
   if (!isOpen) return null;
 
-  const currentPlatformInfo = PLATFORMS.find(p => p.key === selectedPlatform) || PLATFORMS[0];
+  const currentPlatformInfo = PLATFORMS.find(p => p.key === activePreviewPlatform) || PLATFORMS[0];
   const charLimit = currentPlatformInfo.limit;
   const currentChars = (description || "").length;
 
@@ -206,7 +233,8 @@ export default function PostComposerModal({
       }
 
       const payload = {
-        platform: selectedPlatform,
+        platforms: selectedPlatforms,
+        platform: activePreviewPlatform,
         accountId: parseInt(accountId) || 101,
         accountName,
         title,
@@ -302,7 +330,7 @@ export default function PostComposerModal({
             {/* AI Post Writer Assistant (Collapsible) */}
             {aiWriterOpen && (
               <AiPostWriter
-                platform={selectedPlatform}
+                platform={activePreviewPlatform}
                 onApply={handleApplyAiContent}
                 onClose={() => setAiWriterOpen(false)}
               />
@@ -315,34 +343,73 @@ export default function PostComposerModal({
               </div>
             )}
 
-            {/* 1. Channel Selector */}
+            {/* 1. Channel Selector with Multi-Select */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
-                1. SELECT PUBLISHING CHANNEL
-              </label>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
+                    1. SELECT PUBLISHING CHANNELS
+                  </label>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    {selectedPlatforms.length} {selectedPlatforms.length === 1 ? "channel" : "channels"} selected
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={selectAllPlatforms}
+                    className="text-blue-400 hover:text-blue-300 font-medium transition-colors cursor-pointer"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-zinc-600">|</span>
+                  <button
+                    type="button"
+                    onClick={() => selectSinglePlatform(activePreviewPlatform)}
+                    className="text-zinc-400 hover:text-zinc-200 font-medium transition-colors cursor-pointer"
+                  >
+                    Only Current
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PLATFORMS.map((plat) => {
                   const Icon = plat.Icon;
-                  const isSelected = selectedPlatform === plat.key;
+                  const isSelected = selectedPlatforms.includes(plat.key);
+                  const isCurrent = activePreviewPlatform === plat.key;
                   return (
-                    <button
+                    <div
                       key={plat.key}
-                      type="button"
-                      onClick={() => setSelectedPlatform(plat.key)}
-                      className={`p-1.5 px-2 rounded-md border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      onClick={() => togglePlatform(plat.key)}
+                      className={`relative p-2 rounded-md border flex items-center justify-between gap-1.5 transition-all cursor-pointer select-none ${
                         isSelected
-                          ? plat.activeStyle
-                          : "border-zinc-800/80 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                          ? `${plat.activeStyle} ${isCurrent ? "ring-1 ring-white/30" : ""}`
+                          : "border-zinc-800/80 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                       }`}
                     >
-                      <Icon className={`text-xs ${isSelected ? "text-current" : plat.color}`} />
-                      <span className="text-[11px] truncate font-medium">
-                        {plat.name}
-                      </span>
-                    </button>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Icon className={`text-xs shrink-0 ${isSelected ? "text-current" : plat.color}`} />
+                        <span className="text-[11px] truncate font-semibold">
+                          {plat.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center shrink-0">
+                        {isSelected ? (
+                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 text-white flex items-center justify-center text-[9px] font-bold">
+                            ✓
+                          </span>
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-full border border-zinc-700 flex items-center justify-center" />
+                        )}
+                      </div>
+                    </div>
                   );
                 })}
               </div>
+              <p className="text-[10px] text-zinc-500">
+                Click any channel to toggle. Multiple selected channels will be published in a single click.
+              </p>
             </div>
 
             {/* 2. Post Title */}
@@ -484,7 +551,33 @@ export default function PostComposerModal({
 
               {advancedOpen && (
                 <div className="p-3.5 pt-2 border-t border-zinc-800 space-y-3">
-                  {selectedPlatform === "youtube" && (
+                  {selectedPlatforms.length > 1 && (
+                    <div className="flex items-center gap-1.5 pb-2 border-b border-zinc-800/80 overflow-x-auto">
+                      <span className="text-[10px] text-zinc-500 uppercase font-bold mr-1 shrink-0">Configure:</span>
+                      {selectedPlatforms.map((pKey) => {
+                        const plat = PLATFORMS.find(p => p.key === pKey);
+                        const isCurrent = activePreviewPlatform === pKey;
+                        const Icon = plat?.Icon;
+                        return (
+                          <button
+                            key={pKey}
+                            type="button"
+                            onClick={() => setActivePreviewPlatform(pKey)}
+                            className={`px-2 py-0.5 rounded text-[10px] font-medium flex items-center gap-1 transition-colors shrink-0 cursor-pointer ${
+                              isCurrent
+                                ? "bg-zinc-800 text-white font-bold border border-zinc-700"
+                                : "text-zinc-400 hover:text-zinc-200 bg-zinc-900/60"
+                            }`}
+                          >
+                            {Icon && <Icon className={`text-[9px] ${plat.color}`} />}
+                            <span>{plat?.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {activePreviewPlatform === "youtube" && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-[11px] font-medium text-zinc-400 block mb-1">
@@ -529,7 +622,7 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {selectedPlatform === "tiktok" && (
+                  {activePreviewPlatform === "tiktok" && (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs text-zinc-300">
                         <span>Disable Comments</span>
@@ -561,7 +654,7 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {selectedPlatform === "instagram" && (
+                  {activePreviewPlatform === "instagram" && (
                     <div className="space-y-3">
                       <div>
                         <label className="text-[11px] font-medium text-zinc-400 block mb-1">
@@ -588,7 +681,7 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {selectedPlatform === "facebook" && (
+                  {activePreviewPlatform === "facebook" && (
                     <div className="space-y-2">
                       <div>
                         <label className="text-[11px] font-medium text-zinc-400 block mb-1">
@@ -606,7 +699,7 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {selectedPlatform === "x_twitter" && (
+                  {activePreviewPlatform === "x_twitter" && (
                     <div className="space-y-2">
                       <div>
                         <label className="text-[11px] font-medium text-zinc-400 block mb-1">
@@ -625,7 +718,7 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {selectedPlatform === "pinterest" && (
+                  {activePreviewPlatform === "pinterest" && (
                     <div className="space-y-3">
                       <div>
                         <label className="text-[11px] font-medium text-zinc-400 block mb-1">
@@ -654,7 +747,7 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {(selectedPlatform === "linkedin" || selectedPlatform === "threads") && (
+                  {(activePreviewPlatform === "linkedin" || activePreviewPlatform === "threads") && (
                     <p className="text-xs text-zinc-400">
                       Standard optimization and formatting will be automatically applied for {currentPlatformInfo.name}.
                     </p>
@@ -722,7 +815,9 @@ export default function PostComposerModal({
           {/* RIGHT COLUMN: Real-Time Live Feed Mockup (5 cols) */}
           <div className="lg:col-span-5 p-4 sm:p-5 bg-zinc-950/40 flex flex-col overflow-y-auto overflow-x-hidden max-h-[calc(88vh-110px)]">
             <LiveDevicePreview
-              platform={selectedPlatform}
+              platform={activePreviewPlatform}
+              selectedPlatforms={selectedPlatforms}
+              onSelectPlatform={(plat) => setActivePreviewPlatform(plat)}
               title={title}
               description={description}
               tags={tags}
@@ -761,12 +856,24 @@ export default function PostComposerModal({
               {submitting ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Saving...</span>
+                  <span>
+                    {isScheduled 
+                      ? `Scheduling to ${selectedPlatforms.length} ${selectedPlatforms.length === 1 ? "channel" : "channels"}...` 
+                      : `Publishing to ${selectedPlatforms.length} ${selectedPlatforms.length === 1 ? "channel" : "channels"}...`}
+                  </span>
                 </>
               ) : (
                 <>
                   <FiSend className="text-xs" />
-                  <span>{isScheduled ? "Schedule Post" : "Publish Now"}</span>
+                  <span>
+                    {isScheduled
+                      ? selectedPlatforms.length > 1
+                        ? `Schedule to ${selectedPlatforms.length} Channels`
+                        : "Schedule Post"
+                      : selectedPlatforms.length > 1
+                        ? `Publish to ${selectedPlatforms.length} Channels Now`
+                        : "Publish Now"}
+                  </span>
                 </>
               )}
             </button>

@@ -22,6 +22,8 @@ import {
 
 export default function LiveDevicePreview({
   platform = "youtube",
+  selectedPlatforms = null,
+  onSelectPlatform = null,
   title = "",
   description = "",
   tags = "",
@@ -58,34 +60,50 @@ export default function LiveDevicePreview({
     <div className="flex flex-col h-full bg-zinc-950/50 rounded-lg border border-zinc-800 p-3.5 sm:p-4 overflow-hidden">
       {/* Header & Platform Switcher Tabs */}
       <div className="flex flex-col justify-between pb-3 mb-3 border-b border-zinc-800/80 gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
-          <span className="text-[11px] font-semibold text-zinc-300">
-            Live Feed Mockup
-          </span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
+            <span className="text-[11px] font-semibold text-zinc-300">
+              Live Feed Mockup
+            </span>
+          </div>
+          {selectedPlatforms && selectedPlatforms.length > 1 && (
+            <span className="text-[10px] text-zinc-500 font-mono">
+              Previewing {activePreviewTab}
+            </span>
+          )}
         </div>
-        {/* <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-md border border-zinc-800 flex-wrap">
-          {previewTabs.map((tab) => {
-            const Icon = tab.Icon;
-            const isActive = activePreviewTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActivePreviewTab(tab.key)}
-                className={`p-1 px-2 rounded-md text-[11px] font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
-                  isActive
-                    ? tab.activeStyle
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
-                }`}
-                title={`Preview on ${tab.name}`}
-              >
-                <Icon className={`text-xs ${isActive ? "text-current" : tab.color}`} />
-                <span>{tab.name}</span>
-              </button>
-            );
-          })}
-        </div> */}
+
+        {/* Multi-Platform Preview Switcher Tabs */}
+        {selectedPlatforms && selectedPlatforms.length > 1 && (
+          <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
+            {previewTabs
+              .filter((tab) => selectedPlatforms.includes(tab.key))
+              .map((tab) => {
+                const Icon = tab.Icon;
+                const isActive = activePreviewTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => {
+                      setActivePreviewTab(tab.key);
+                      if (onSelectPlatform) onSelectPlatform(tab.key);
+                    }}
+                    className={`px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                      isActive
+                        ? tab.activeStyle
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+                    }`}
+                    title={`Preview on ${tab.name}`}
+                  >
+                    <Icon className={`text-xs ${isActive ? "text-current" : tab.color}`} />
+                    <span>{tab.name}</span>
+                  </button>
+                );
+              })}
+          </div>
+        )}
       </div>
 
       {/* Device Mockup Canvas */}

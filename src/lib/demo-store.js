@@ -7,7 +7,7 @@ export const DemoStore = {
   getPosts: () => [...fallbackPosts],
   addPost: (post) => {
     const newPost = {
-      id: "post-" + Date.now(),
+      id: "post-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
       createdAt: new Date().toISOString(),
       status: "scheduled",
       ...post,

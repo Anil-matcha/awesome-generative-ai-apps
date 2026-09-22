@@ -230,24 +230,32 @@ export async function POST(req) {
     const body = await req.json();
 
     const {
-      accountId,
-      platform,
+      accountId = 101,
       accountName,
+      title = "",
+      description = "",
+      tags = "",
       mediaUrl,
-      title,
-      description,
-      tags,
-      privacy,
+      privacy = "public",
       scheduledAt,
-      disableComment,
-      disableDuet,
-      disableStitch,
+      disableComment = false,
+      disableDuet = false,
+      disableStitch = false,
       categoryId,
-      madeForKids
+      madeForKids = false,
+      placement,
+      shareToFeed = true,
+      destinationLink = "",
+      boardId = "",
+      replySettings = "everyone"
     } = body;
 
-    if (!accountId || !platform || !mediaUrl) {
-      return NextResponse.json({ error: "Missing required fields: accountId, platform, and mediaUrl are mandatory." }, { status: 400 });
+    const targetPlatforms = Array.isArray(body.platforms) && body.platforms.length > 0
+      ? body.platforms
+      : (body.platform ? [body.platform] : []);
+
+    if (!mediaUrl || targetPlatforms.length === 0) {
+      return NextResponse.json({ error: "Missing required fields: at least one platform and mediaUrl are mandatory." }, { status: 400 });
     }
 
     let user = null;
@@ -261,22 +269,54 @@ export async function POST(req) {
       user = { credits: 50 };
     }
 
-    const cost = config.ai.generationCost;
-    if (user && user.credits < cost) {
-      return NextResponse.json({ error: `Insufficient credits. This operation costs ${cost} credits but you have ${user?.credits ?? 0}.` }, { status: 400 });
-    }
-
+    const costPerPost = config.ai.generationCost || 1;
     const isScheduled = scheduledAt && new Date(scheduledAt) > new Date();
 
-    if (isScheduled) {
-      // Create scheduled post
-      try {
-        const post = await prisma.scheduledPost.create({
-          data: {
+    if (!isScheduled) {
+      const totalCost = costPerPost * targetPlatforms.length;
+      if (user && user.credits < totalCost) {
+        return NextResponse.json({
+          error: `Insufficient credits. Publishing to ${targetPlatforms.length} platforms costs ${totalCost} credits, but you have ${user?.credits ?? 0}.`
+        }, { status: 400 });
+      }
+    }
+
+    const createdPosts = [];
+
+    for (const plat of targetPlatforms) {
+      const platAccountName = accountName || `${plat} Account`;
+      const platAccountId = parseInt(accountId) || 101;
+
+      if (isScheduled) {
+        try {
+          const post = await prisma.scheduledPost.create({
+            data: {
+              userId,
+              accountId: platAccountId,
+              platform: plat,
+              accountName: platAccountName,
+              mediaUrl,
+              title: title || "",
+              description: description || "",
+              tags: tags || "",
+              privacy: privacy || "public",
+              disableComment: !!disableComment,
+              disableDuet: !!disableDuet,
+              disableStitch: !!disableStitch,
+              categoryId: categoryId || null,
+              madeForKids: !!madeForKids,
+              scheduledAt: new Date(scheduledAt),
+              status: "scheduled"
+            }
+          });
+          createdPosts.push(post);
+        } catch (dbErr) {
+          console.warn(`[POST_CREATE_FALLBACK] DB offline for ${plat}, saving to DemoStore:`, dbErr.message);
+          const post = DemoStore.addPost({
             userId,
-            accountId: parseInt(accountId),
-            platform,
-            accountName: accountName || `${platform} Account`,
+            accountId: platAccountId,
+            platform: plat,
+            accountName: platAccountName,
             mediaUrl,
             title: title || "",
             description: description || "",
@@ -287,65 +327,50 @@ export async function POST(req) {
             disableStitch: !!disableStitch,
             categoryId: categoryId || null,
             madeForKids: !!madeForKids,
-            scheduledAt: new Date(scheduledAt),
+            scheduledAt: new Date(scheduledAt).toISOString(),
             status: "scheduled"
-          }
-        });
-        return NextResponse.json(post);
-      } catch (dbErr) {
-        console.warn("[POST_CREATE_FALLBACK] DB offline, saving to DemoStore:", dbErr.message);
-        const post = DemoStore.addPost({
-          userId,
-          accountId: parseInt(accountId),
-          platform,
-          accountName: accountName || `${platform} Account`,
-          mediaUrl,
-          title: title || "",
-          description: description || "",
-          tags: tags || "",
-          privacy: privacy || "public",
-          disableComment: !!disableComment,
-          disableDuet: !!disableDuet,
-          disableStitch: !!disableStitch,
-          categoryId: categoryId || null,
-          madeForKids: !!madeForKids,
-          scheduledAt: new Date(scheduledAt).toISOString(),
-          status: "scheduled"
-        });
-        return NextResponse.json(post);
-      }
-    } else {
-      // Immediate publish
-      try {
-        await UserService.deductCredits(userId, cost);
-      } catch (e) {}
-
-      try {
-        // Submit to MuAPI if API key is present
-        let requestId = "req_" + Date.now();
-        if (config.ai.apiKey && !config.ai.apiKey.includes("your_")) {
-          requestId = await triggerMuApiPublish(platform, {
-            accountId,
-            mediaUrl,
-            title,
-            description,
-            tags,
-            privacy,
-            disableComment,
-            disableDuet,
-            disableStitch,
-            categoryId,
-            madeForKids
           });
+          createdPosts.push(post);
+        }
+      } else {
+        // Immediate publish
+        try {
+          await UserService.deductCredits(userId, costPerPost);
+        } catch (e) {}
+
+        let requestId = "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+        if (config.ai.apiKey && !config.ai.apiKey.includes("your_")) {
+          try {
+            requestId = await triggerMuApiPublish(plat, {
+              accountId: platAccountId,
+              mediaUrl,
+              title,
+              description,
+              tags,
+              privacy,
+              disableComment,
+              disableDuet,
+              disableStitch,
+              categoryId,
+              madeForKids,
+              placement,
+              shareToFeed,
+              destinationLink,
+              boardId,
+              replySettings
+            });
+          } catch (pubErr) {
+            console.warn(`[IMMEDIATE_PUBLISH_ERR] Failed for ${plat}:`, pubErr.message);
+          }
         }
 
         try {
           const post = await prisma.scheduledPost.create({
             data: {
               userId,
-              accountId: parseInt(accountId),
-              platform,
-              accountName: accountName || `${platform} Account`,
+              accountId: platAccountId,
+              platform: plat,
+              accountName: platAccountName,
               mediaUrl,
               title: title || "",
               description: description || "",
@@ -361,14 +386,14 @@ export async function POST(req) {
               requestId: requestId
             }
           });
-          return NextResponse.json(post);
+          createdPosts.push(post);
         } catch (dbErr) {
-          console.warn("[POST_IMMEDIATE_FALLBACK] DB offline, saving to DemoStore");
+          console.warn(`[POST_IMMEDIATE_FALLBACK] DB offline for ${plat}, saving to DemoStore`);
           const post = DemoStore.addPost({
             userId,
-            accountId: parseInt(accountId),
-            platform,
-            accountName: accountName || `${platform} Account`,
+            accountId: platAccountId,
+            platform: plat,
+            accountName: platAccountName,
             mediaUrl,
             title: title || "",
             description: description || "",
@@ -377,15 +402,22 @@ export async function POST(req) {
             scheduledAt: new Date().toISOString(),
             status: "completed",
             requestId: requestId,
-            publishedUrl: `https://${platform}.com/sample_post`
+            publishedUrl: `https://${plat}.com/sample_post`
           });
-          return NextResponse.json(post);
+          createdPosts.push(post);
         }
-      } catch (err) {
-        try { await UserService.addCredits(userId, cost); } catch (e) {}
-        throw err;
       }
     }
+
+    // Return created post(s)
+    if (createdPosts.length === 1 && !Array.isArray(body.platforms)) {
+      return NextResponse.json(createdPosts[0]);
+    }
+    return NextResponse.json({
+      success: true,
+      posts: createdPosts,
+      count: createdPosts.length
+    });
   } catch (error) {
     console.error("[POST_POSTS_ERROR]", error);
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
