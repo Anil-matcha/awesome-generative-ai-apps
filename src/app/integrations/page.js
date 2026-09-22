@@ -33,53 +33,52 @@ const PLATFORMS = [
     Icon: FaInstagram,
     iconColor: "text-pink-500",
     description: "Publish Reels and images to Instagram Business.",
-    comingSoon: true,
-    requestAccess: true,
+    comingSoon: false,
   },
   {
     key: "x_twitter",
+    platformId: 4,
     name: "X (Twitter)",
     Icon: FaXTwitter,
     iconColor: "text-zinc-300",
     description: "Publish posts and videos to X (Twitter).",
-    comingSoon: true,
-    requestAccess: true,
+    comingSoon: false,
   },
   {
     key: "facebook",
+    platformId: 5,
     name: "Facebook",
     Icon: FaFacebook,
     iconColor: "text-blue-600",
     description: "Publish Reels and posts to Facebook Pages.",
-    comingSoon: true,
-    requestAccess: true,
+    comingSoon: false,
   },
   {
     key: "linkedin",
+    platformId: 6,
     name: "LinkedIn",
     Icon: FaLinkedin,
     iconColor: "text-sky-600",
     description: "Share videos and posts to LinkedIn profiles and pages.",
-    comingSoon: true,
-    requestAccess: true,
+    comingSoon: false,
   },
   {
     key: "threads",
+    platformId: 7,
     name: "Threads",
     Icon: FaThreads,
     iconColor: "text-zinc-200",
     description: "Publish posts and media to Threads.",
-    comingSoon: true,
-    requestAccess: true,
+    comingSoon: false,
   },
   {
     key: "pinterest",
+    platformId: 8,
     name: "Pinterest",
     Icon: FaPinterest,
     iconColor: "text-red-600",
     description: "Publish Pins and boards to Pinterest.",
-    comingSoon: true,
-    requestAccess: true,
+    comingSoon: false,
   },
 ];
 
@@ -102,7 +101,7 @@ export default function IntegrationsPage() {
 
   useEffect(() => {
     // Fetch interest counts from MuAPI public endpoint
-    fetch("https://api.muapi.ai/api/social/integration-interest-counts")
+    fetch("https://muapi.ai/api/social/integration-interest-counts")
       .then((res) => res.json())
       .then((data) => setInterestCounts(data || {}))
       .catch(() => {});
@@ -182,33 +181,29 @@ export default function IntegrationsPage() {
     const platform = connectingPlatform;
     setConnectingPlatform(null);
 
-    if (platform.key === "youtube") {
-      if (label) {
-        localStorage.setItem("pending_youtube_label", label);
+    if (platform.key === "youtube" && label) {
+      localStorage.setItem("pending_youtube_label", label);
+    }
+
+    try {
+      const res = await fetch("/api/social/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: platform.key,
+          accountName: label,
+          redirectUrl: window.location.href
+        })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
       } else {
-        localStorage.removeItem("pending_youtube_label");
+        alert(data.error || "Failed to initiate connection");
       }
-      try {
-        const res = await fetch("/api/social/youtube/connect", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            redirectUrl: window.location.href
-          })
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert(data.error || "Failed to initiate connection");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error connecting YouTube account");
-      }
-    } else if (platform.key === "tiktok") {
-      const name = encodeURIComponent(label);
-      window.location.href = `https://muapi.ai/api/social/tiktok/connect?account_name=${name}&redirect_to=/integrations`;
+    } catch (err) {
+      console.error(err);
+      alert(`Error connecting ${platform.name} account`);
     }
   };
 
@@ -278,7 +273,7 @@ export default function IntegrationsPage() {
       }));
 
       // Call MuAPI (ignore errors due to session auth requirement)
-      await fetch("https://api.muapi.ai/api/social/integration-interest", {
+      await fetch("https://muapi.ai/api/social/integration-interest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ platform_name: platform.name })
@@ -292,8 +287,10 @@ export default function IntegrationsPage() {
     }
   };
 
-  const getAccountsForPlatform = (platformId) =>
-    accounts.filter((a) => a.platform === platformId);
+  const getAccountsForPlatform = (platformId, platformKey) =>
+    accounts.filter(
+      (a) => a.platform === platformId || a.platform_name === platformKey || a.platform === platformKey
+    );
 
   return (
     <main className="flex-1 overflow-y-auto bg-zinc-950 px-6 py-12 min-h-screen">
@@ -383,7 +380,7 @@ export default function IntegrationsPage() {
 
         {/* Guest Warning alert */}
         {!session?.user && (
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <FiAlertTriangle className="text-amber-500 text-lg shrink-0" />
               <div className="flex flex-col gap-0.5">
@@ -404,7 +401,7 @@ export default function IntegrationsPage() {
         <div className="flex flex-col gap-6">
           {PLATFORMS.map((platform) => {
             const { key, platformId, name, Icon, iconColor, description, comingSoon, requestAccess } = platform;
-            const connected = getAccountsForPlatform(platformId);
+            const connected = getAccountsForPlatform(platformId, key);
             const requested = requestedPlatforms.includes(name);
             const requestCount = interestCounts[name] || 0;
 
@@ -413,7 +410,7 @@ export default function IntegrationsPage() {
                 {/* Platform main row */}
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
                       <Icon className={`text-xl ${iconColor}`} />
                     </div>
                     <div className="flex flex-col">
@@ -467,7 +464,7 @@ export default function IntegrationsPage() {
                       <div className="h-10 w-full bg-zinc-900/60 rounded-lg animate-pulse" />
                     ) : connected.length > 0 ? (
                       connected.map((acc) => (
-                        <div key={acc.id} className="bg-zinc-900/50 rounded-xl px-4 py-3 border border-zinc-900 flex items-center justify-between gap-3">
+                        <div key={acc.id} className="bg-zinc-900/50 rounded-lg px-4 py-3 border border-zinc-900 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2 truncate">
                             {renamingId === acc.id ? (
                               <input

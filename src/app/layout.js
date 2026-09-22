@@ -19,13 +19,13 @@ export default function RootLayout({ children }) {
   const theme = config?.theme || "slate-indigo";
 
   return (
-    <html lang="en" className="h-full w-full" data-theme={theme}>
-      <body className={`${inter.variable} ${inter.className} h-full w-full flex flex-col antialiased bg-bg-page text-primary-text overflow-hidden`}>
+    <html lang="en" className="min-h-screen w-full" data-theme={theme}>
+      <body className={`${inter.variable} ${inter.className} min-h-screen w-full flex flex-col antialiased bg-bg-page text-primary-text overflow-x-hidden`}>
         <Providers>
           <Navbar />
-          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+          <main className="flex-1 w-full flex flex-col min-h-0">
             {children}
-          </div>
+          </main>
         </Providers>
       </body>
     </html>

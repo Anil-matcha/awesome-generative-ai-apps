@@ -75,7 +75,7 @@ export default function GalleryPage() {
 
         {/* Guest Warning */}
         {!session?.user && (
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <FaExclamationTriangle className="text-amber-500 text-lg shrink-0" />
               <div className="flex flex-col text-left">
@@ -95,7 +95,7 @@ export default function GalleryPage() {
         {session?.user && (
           <>
             {/* Filters panel */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-zinc-900/30 p-4 rounded-xl border border-zinc-900">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-zinc-900/30 p-4 rounded-lg border border-zinc-900">
               {/* Search bar */}
               <div className="relative w-full sm:w-80">
                 <FiSearch className="absolute left-3 top-3.5 text-zinc-500 text-sm" />
@@ -151,7 +151,7 @@ export default function GalleryPage() {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="card-premium h-80 bg-zinc-900/60 animate-pulse rounded-xl" />
+                  <div key={i} className="card-premium h-80 bg-zinc-900/60 animate-pulse rounded-lg" />
                 ))}
               </div>
             ) : filteredPosts.length > 0 ? (
@@ -240,7 +240,7 @@ export default function GalleryPage() {
                 {(!searchQuery && platformFilter === "all") && (
                   <Link
                     href="/"
-                    className="px-4 py-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold text-xs rounded-xl shadow-lg transition-colors cursor-pointer"
+                    className="px-4 py-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold text-xs rounded-lg shadow-lg transition-colors cursor-pointer"
                   >
                     Go to Workspace
                   </Link>

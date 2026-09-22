@@ -26,28 +26,24 @@ export default function Navbar() {
   const appMatch = pathname ? pathname.match(/^\/app\/([^\/]+)/) : null;
   const currentAppId = appMatch ? appMatch[1] : null;
 
-  const navLinks = currentAppId
-    ? [
-        { name: "Workspace", path: `/app/${currentAppId}` },
-        { name: "Gallery", path: `/app/${currentAppId}/gallery` },
-        { name: "Pricing", path: `/app/${currentAppId}/pricing` },
-      ]
-    : [
-        { name: "Workspace", path: "/" },
-        { name: "Gallery", path: "/gallery" },
-        { name: "Pricing", path: "/pricing" },
-      ];
+  const navLinks = [
+    { name: "Calendar", path: "/" },
+    { name: "Channels", path: "/integrations" },
+    { name: "Agent", path: "/agents" },
+    { name: "Gallery", path: "/gallery" },
+    { name: "Pricing", path: "/pricing" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full glass-panel border-b border-divider/50 shadow-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         
         {/* Logo and Brand Title (Visible at all times) */}
-        <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white font-extrabold text-lg shadow-md shadow-primary/30">
+        <Link href="/" className="flex items-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-95">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 text-white font-extrabold text-lg shadow-md shadow-indigo-500/30">
             {logoLetter}
           </div>
-          <span className="text-lg font-black tracking-tight text-primary-text text-nowrap">
+          <span className="text-lg font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-indigo-300 text-nowrap">
             {appName}
           </span>
         </Link>
@@ -61,12 +57,12 @@ export default function Navbar() {
                 key={link.name}
                 href={link.path}
                 className={`text-[13px] font-semibold transition-all relative py-1 ${
-                  isActive ? "text-primary" : "text-secondary-text hover:text-primary-text"
+                  isActive ? "text-indigo-400 font-bold" : "text-zinc-400 hover:text-zinc-100"
                 }`}
               >
                 {link.name}
                 {isActive && (
-                  <div className="absolute -bottom-[20px] left-0 right-0 h-0.5 bg-primary rounded-full" />
+                  <div className="absolute -bottom-[20px] left-0 right-0 h-0.5 bg-indigo-500 rounded-full shadow-sm shadow-indigo-500/50" />
                 )}
               </Link>
             );
