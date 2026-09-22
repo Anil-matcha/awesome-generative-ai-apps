@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { FaYoutube, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaYoutube, FaInstagram, FaLinkedin, FaCheckCircle, FaGlobeAmericas } from "react-icons/fa";
 import { FaXTwitter, FaThreads } from "react-icons/fa6";
 import { SiTiktok } from "react-icons/si";
 import { 
@@ -14,7 +14,10 @@ import {
   FiPlay, 
   FiThumbsUp, 
   FiThumbsDown,
-  FiSend
+  FiSend,
+  FiPlus,
+  FiMusic,
+  FiBarChart2
 } from "react-icons/fi";
 
 export default function LiveDevicePreview({
@@ -26,6 +29,13 @@ export default function LiveDevicePreview({
   accountName = "Creator Studio",
 }) {
   const [activePreviewTab, setActivePreviewTab] = useState(platform);
+
+  // Synchronize active preview tab whenever the composer's selected platform changes
+  useEffect(() => {
+    if (platform) {
+      setActivePreviewTab(platform);
+    }
+  }, [platform]);
 
   const displayTitle = title || "Your engaging post title goes here...";
   const displayDescription = description || "Write an engaging description, hook your audience, and add hashtags to boost reach!";
@@ -43,16 +53,16 @@ export default function LiveDevicePreview({
   ];
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950/50 rounded-xl border border-zinc-800 p-3.5 sm:p-4 overflow-hidden">
+    <div className="flex flex-col h-full bg-zinc-950/50 rounded-lg border border-zinc-800 p-3.5 sm:p-4 overflow-hidden">
       {/* Header & Platform Switcher Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-zinc-800/80 gap-2">
+      <div className="flex flex-col justify-between pb-3 mb-3 border-b border-zinc-800/80 gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
           <span className="text-[11px] font-semibold text-zinc-300">
             Live Feed Mockup
           </span>
         </div>
-        <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 flex-wrap">
+        {/* <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-md border border-zinc-800 flex-wrap">
           {previewTabs.map((tab) => {
             const Icon = tab.Icon;
             const isActive = activePreviewTab === tab.key;
@@ -73,14 +83,14 @@ export default function LiveDevicePreview({
               </button>
             );
           })}
-        </div>
+        </div> */}
       </div>
 
       {/* Device Mockup Canvas */}
-      <div className="flex-1 flex items-center justify-center min-h-[400px] overflow-hidden w-full">
+      <div className="flex-1 flex justify-center items-start overflow-y-auto w-full py-1">
         {/* YOUTUBE MOCKUP */}
         {activePreviewTab === "youtube" && (
-          <div className="w-full max-w-[320px] mx-auto bg-zinc-900/90 rounded-xl border border-zinc-800 overflow-hidden text-zinc-100">
+          <div className="w-full max-w-[340px] mx-auto bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden text-zinc-100 shadow-xl animate-fade-in">
             {/* Video Thumbnail */}
             <div className="relative aspect-video bg-black overflow-hidden group">
               <img
@@ -89,57 +99,76 @@ export default function LiveDevicePreview({
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-red-600/90 text-white flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg">
                   <FiPlay className="text-base ml-0.5 fill-current" />
                 </div>
               </div>
-              <span className="absolute bottom-1.5 right-1.5 bg-black/80 text-white text-[9px] font-mono px-1 py-0.5 rounded">
+              <span className="absolute bottom-1.5 right-1.5 bg-black/85 text-white text-[9px] font-mono px-1.5 py-0.5 rounded font-semibold">
                 12:45
               </span>
             </div>
 
-            {/* Video Metadata */}
+            {/* Video Content & Metadata */}
             <div className="p-3 space-y-2.5">
-              <div className="flex items-start gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-zinc-800 text-zinc-300 font-medium flex items-center justify-center shrink-0 text-xs border border-zinc-700">
-                  {displayAccount.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-medium text-zinc-100 line-clamp-2 leading-snug">
-                    {displayTitle}
-                  </h4>
-                  <p className="text-[10px] text-zinc-500 mt-0.5 flex items-center gap-1.5">
-                    <span className="text-zinc-400">{displayAccount}</span>
-                    <span>•</span>
-                    <span>1.2K views</span>
-                  </p>
-                </div>
+              <div className="space-y-1">
+                <h4 className="text-xs font-semibold text-zinc-100 line-clamp-2 leading-snug">
+                  {displayTitle}
+                </h4>
+                <p className="text-[10px] text-zinc-400 flex items-center gap-1.5">
+                  <span>14K views</span>
+                  <span>•</span>
+                  <span>2 hours ago</span>
+                </p>
               </div>
 
-              {/* Description Preview */}
-              <div className="bg-zinc-950/60 p-2 rounded-lg text-[11px] text-zinc-400 border border-zinc-800/60 leading-relaxed line-clamp-3">
-                {displayDescription}
+              {/* Channel Profile Row */}
+              <div className="flex items-center justify-between pt-1 border-t border-zinc-800/60">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-red-600 to-rose-500 text-white font-bold flex items-center justify-center shrink-0 text-xs shadow-sm">
+                    {displayAccount.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 truncate">
+                    <p className="text-xs font-medium text-zinc-200 truncate leading-tight">
+                      {displayAccount}
+                    </p>
+                    <p className="text-[9px] text-zinc-400 leading-tight">
+                      24.5K subscribers
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="px-2.5 py-1 rounded-full bg-white text-zinc-950 font-bold text-[10px] hover:bg-zinc-200 transition-colors shrink-0"
+                >
+                  Subscribe
+                </button>
+              </div>
+
+              {/* Description Preview Box */}
+              <div className="bg-zinc-950/70 p-2.5 rounded-md text-[11px] text-zinc-300 border border-zinc-800/70 leading-relaxed">
+                <p className="line-clamp-2">{displayDescription}</p>
                 {tags && (
-                  <p className="text-zinc-500 font-mono mt-1 text-[10px]">
+                  <p className="text-sky-400 font-mono mt-1 text-[10px] truncate">
                     {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
                   </p>
                 )}
               </div>
 
-              {/* Engagement Bar */}
-              <div className="flex items-center justify-between pt-0.5 text-zinc-400 text-xs">
-                <div className="flex items-center gap-1 bg-zinc-800/60 px-2 py-0.5 rounded-md text-[11px]">
+              {/* YouTube Pill Action Bar */}
+              <div className="flex items-center gap-1.5 pt-0.5 text-zinc-300 text-xs overflow-x-auto">
+                <div className="flex items-center bg-zinc-800/80 rounded-full px-2.5 py-1 text-[11px] gap-1.5 shrink-0">
                   <FiThumbsUp className="text-[10px]" />
-                  <span>248</span>
-                  <span className="mx-1 text-zinc-600">|</span>
+                  <span>1.2K</span>
+                  <span className="text-zinc-600">|</span>
                   <FiThumbsDown className="text-[10px]" />
                 </div>
-                <div className="flex items-center gap-1 bg-zinc-800/60 px-2 py-0.5 rounded-md text-[11px]">
+                <div className="flex items-center bg-zinc-800/80 rounded-full px-2.5 py-1 text-[11px] gap-1 shrink-0">
                   <FiShare2 className="text-[10px]" />
                   <span>Share</span>
                 </div>
-                <div className="flex items-center gap-1 bg-zinc-800/60 px-2 py-0.5 rounded-md text-[11px]">
+                <div className="flex items-center bg-zinc-800/80 rounded-full px-2.5 py-1 text-[11px] gap-1 shrink-0">
                   <FiBookmark className="text-[10px]" />
+                  <span>Save</span>
                 </div>
               </div>
             </div>
@@ -148,68 +177,90 @@ export default function LiveDevicePreview({
 
         {/* TIKTOK MOCKUP */}
         {activePreviewTab === "tiktok" && (
-          <div className="relative w-[250px] h-[420px] mx-auto bg-black rounded-2xl border border-zinc-800 overflow-hidden flex flex-col justify-between p-3">
+          <div className="relative w-[260px] h-[450px] mx-auto bg-black rounded-lg border border-zinc-800 overflow-hidden flex flex-col justify-between p-3.5 shadow-2xl animate-fade-in text-white">
             {/* Background Media */}
             <img
               src={displayMedia}
               alt="TikTok Media"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/95 pointer-events-none" />
 
             {/* Top Navigation */}
             <div className="relative z-10 flex items-center justify-center gap-4 text-[11px] font-medium text-white/70 pt-1">
-              <span>Following</span>
-              <span className="text-white border-b-2 border-white pb-0.5">For You</span>
+              <span className="hover:text-white cursor-pointer">Following</span>
+              <span className="text-white border-b-2 border-white pb-0.5 font-bold">For You</span>
             </div>
 
-            {/* Right Action Icons */}
-            <div className="absolute right-2.5 bottom-14 z-10 flex flex-col items-center gap-3 text-white">
+            {/* Right Action Sidebar */}
+            <div className="absolute right-2.5 bottom-12 z-10 flex flex-col items-center gap-3">
+              {/* Creator Avatar with Follow Plus Badge */}
               <div className="relative mb-1">
-                <div className="w-7 h-7 rounded-full bg-zinc-800 border border-white overflow-hidden flex items-center justify-center font-bold text-xs">
-                  {displayAccount.charAt(0).toUpperCase()}
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-fuchsia-500 p-0.5">
+                  <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center font-bold text-xs">
+                    {displayAccount.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[9px] font-black shadow">
+                  <FiPlus />
                 </div>
               </div>
+
+              {/* Heart */}
               <div className="flex flex-col items-center gap-0.5">
-                <div className="w-6 h-6 rounded-full bg-black/40 flex items-center justify-center">
-                  <FiHeart className="text-xs text-red-500 fill-red-500" />
+                <div className="w-7 h-7 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                  <FiHeart className="text-sm text-red-500 fill-red-500" />
                 </div>
-                <span className="text-[9px] font-mono">14.2K</span>
+                <span className="text-[9px] font-mono font-medium">28.4K</span>
               </div>
+
+              {/* Comment */}
               <div className="flex flex-col items-center gap-0.5">
-                <div className="w-6 h-6 rounded-full bg-black/40 flex items-center justify-center">
-                  <FiMessageCircle className="text-xs" />
+                <div className="w-7 h-7 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                  <FiMessageCircle className="text-sm" />
                 </div>
-                <span className="text-[9px] font-mono">892</span>
+                <span className="text-[9px] font-mono font-medium">1,240</span>
               </div>
+
+              {/* Bookmark */}
               <div className="flex flex-col items-center gap-0.5">
-                <div className="w-6 h-6 rounded-full bg-black/40 flex items-center justify-center">
-                  <FiBookmark className="text-xs" />
+                <div className="w-7 h-7 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                  <FiBookmark className="text-sm" />
                 </div>
-                <span className="text-[9px] font-mono">4.1K</span>
+                <span className="text-[9px] font-mono font-medium">3,820</span>
               </div>
+
+              {/* Share */}
               <div className="flex flex-col items-center gap-0.5">
-                <div className="w-6 h-6 rounded-full bg-black/40 flex items-center justify-center">
-                  <FiShare2 className="text-xs" />
+                <div className="w-7 h-7 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                  <FiShare2 className="text-sm" />
                 </div>
-                <span className="text-[9px] font-mono">340</span>
+                <span className="text-[9px] font-mono font-medium">840</span>
+              </div>
+
+              {/* Spinning Vinyl Record */}
+              <div className="relative mt-1">
+                <div className="w-7 h-7 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center animate-spin" style={{ animationDuration: "4s" }}>
+                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-800 border border-zinc-600" />
+                </div>
+                <span className="absolute -top-1 -right-1 text-[8px]">🎵</span>
               </div>
             </div>
 
-            {/* Bottom Caption & Audio */}
-            <div className="relative z-10 text-white space-y-1 pr-10 pb-1">
-              <span className="text-[11px] font-medium">{handle}</span>
-              <p className="text-[10px] leading-snug line-clamp-2 text-zinc-200">
+            {/* Bottom Caption & Audio Info */}
+            <div className="relative z-10 space-y-1.5 pr-12 pb-1">
+              <span className="text-xs font-bold block drop-shadow-md">{handle}</span>
+              <p className="text-[11px] leading-snug line-clamp-2 text-zinc-100 drop-shadow-md">
                 {displayTitle} - {displayDescription}
               </p>
               {tags && (
-                <p className="text-[10px] text-cyan-300 font-mono">
+                <p className="text-[10px] text-cyan-300 font-mono drop-shadow">
                   {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
                 </p>
               )}
-              <div className="flex items-center gap-1 text-[9px] text-zinc-400 pt-0.5">
-                <span>🎵</span>
-                <span className="truncate">{displayAccount} • Original Sound</span>
+              <div className="flex items-center gap-1.5 text-[9px] text-zinc-300 pt-0.5 drop-shadow">
+                <FiMusic className="text-[10px]" />
+                <span className="truncate">{displayAccount} • Original Audio</span>
               </div>
             </div>
           </div>
@@ -217,19 +268,21 @@ export default function LiveDevicePreview({
 
         {/* INSTAGRAM MOCKUP */}
         {activePreviewTab === "instagram" && (
-          <div className="w-full max-w-[320px] mx-auto bg-zinc-900/90 rounded-xl border border-zinc-800 overflow-hidden text-zinc-100">
-            {/* Post Header */}
-            <div className="flex items-center justify-between p-2.5 border-b border-zinc-800">
+          <div className="w-full max-w-[340px] mx-auto bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden text-zinc-100 shadow-xl animate-fade-in">
+            {/* Post Header with Story Ring */}
+            <div className="flex items-center justify-between p-2.5 border-b border-zinc-800/80">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-medium text-[10px]">
-                  {displayAccount.charAt(0).toUpperCase()}
+                <div className="p-[1.5px] bg-gradient-to-tr from-amber-500 via-rose-500 to-fuchsia-600 rounded-full">
+                  <div className="w-6 h-6 rounded-full bg-zinc-950 border border-zinc-900 flex items-center justify-center font-bold text-[10px] text-white">
+                    {displayAccount.charAt(0).toUpperCase()}
+                  </div>
                 </div>
                 <div>
-                  <span className="text-[11px] font-medium block">{handle.replace("@", "")}</span>
-                  <span className="text-[9px] text-zinc-500">Original Audio</span>
+                  <span className="text-xs font-semibold block leading-tight">{handle.replace("@", "")}</span>
+                  <span className="text-[9px] text-zinc-400 leading-tight">Original Audio</span>
                 </div>
               </div>
-              <FiMoreHorizontal className="text-zinc-500 text-xs" />
+              <FiMoreHorizontal className="text-zinc-400 text-xs cursor-pointer hover:text-white" />
             </div>
 
             {/* Media Canvas */}
@@ -241,62 +294,82 @@ export default function LiveDevicePreview({
               />
             </div>
 
-            {/* Engagement Icons */}
-            <div className="p-2.5 space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-3">
-                  <FiHeart className="hover:text-red-400 cursor-pointer" />
-                  <FiMessageCircle className="cursor-pointer" />
-                  <FiSend className="cursor-pointer" />
+            {/* Engagement Action Row */}
+            <div className="p-3 space-y-1.5">
+              <div className="flex items-center justify-between text-base">
+                <div className="flex items-center gap-3 text-zinc-200">
+                  <FiHeart className="hover:text-red-500 transition-colors cursor-pointer" />
+                  <FiMessageCircle className="hover:text-zinc-400 transition-colors cursor-pointer" />
+                  <FiSend className="hover:text-zinc-400 transition-colors cursor-pointer" />
                 </div>
-                <FiBookmark className="cursor-pointer" />
+                <FiBookmark className="text-zinc-200 hover:text-zinc-400 transition-colors cursor-pointer" />
               </div>
-              <span className="text-[11px] font-medium block text-zinc-300">1,842 likes</span>
-              <p className="text-[11px] text-zinc-300 leading-snug line-clamp-2">
-                <span className="font-medium mr-1.5 text-zinc-100">{handle.replace("@", "")}</span>
+
+              {/* Likes Count */}
+              <p className="text-xs font-semibold text-zinc-200">
+                Liked by <span className="font-bold">creator_hub</span> and <span className="font-bold">3,429 others</span>
+              </p>
+
+              {/* Post Caption */}
+              <p className="text-xs text-zinc-300 leading-snug line-clamp-2">
+                <span className="font-bold mr-1.5 text-zinc-100">{handle.replace("@", "")}</span>
                 {displayTitle} - {displayDescription}
               </p>
+
+              {/* Tags */}
               {tags && (
-                <p className="text-[10px] text-zinc-500 font-mono">
+                <p className="text-[10px] text-indigo-400 font-mono">
                   {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
                 </p>
               )}
+
+              {/* Comment Link & Timestamp */}
+              <p className="text-[10px] text-zinc-500 cursor-pointer hover:text-zinc-400 pt-0.5">
+                View all 48 comments
+              </p>
+              <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-medium">
+                2 HOURS AGO
+              </p>
             </div>
           </div>
         )}
 
         {/* X / TWITTER MOCKUP */}
         {activePreviewTab === "x_twitter" && (
-          <div className="w-full max-w-[320px] mx-auto bg-zinc-950 rounded-xl border border-zinc-800 p-3.5 text-zinc-100 space-y-2">
+          <div className="w-full max-w-[340px] mx-auto bg-zinc-950 border border-zinc-800 rounded-lg p-3.5 text-zinc-100 space-y-2.5 shadow-xl animate-fade-in">
             <div className="flex items-start gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center font-medium text-xs shrink-0 border border-zinc-700">
+              <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-xs shrink-0 border border-zinc-700">
                 {displayAccount.charAt(0).toUpperCase()}
               </div>
+
               <div className="flex-1 min-w-0">
+                {/* Author row */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 truncate">
-                    <span className="text-[11px] font-medium truncate">{displayAccount}</span>
-                    <span className="text-[10px] text-zinc-500 truncate">{handle}</span>
+                    <span className="text-xs font-bold text-zinc-100 truncate">{displayAccount}</span>
+                    <FaCheckCircle className="text-sky-400 text-[11px] shrink-0" />
+                    <span className="text-[11px] text-zinc-500 truncate">{handle}</span>
+                    <span className="text-[11px] text-zinc-500">· 2h</span>
                   </div>
-                  <FiMoreHorizontal className="text-zinc-500 shrink-0 text-xs" />
+                  <FiMoreHorizontal className="text-zinc-500 shrink-0 text-xs cursor-pointer hover:text-zinc-300" />
                 </div>
 
                 {/* Tweet Body */}
-                <p className="text-[11px] text-zinc-200 mt-1 leading-relaxed whitespace-pre-line line-clamp-3">
+                <p className="text-xs text-zinc-200 mt-1 leading-relaxed whitespace-pre-line line-clamp-4">
                   {displayTitle}
                   {"\n"}
                   {displayDescription}
                 </p>
 
                 {tags && (
-                  <p className="text-[10px] text-zinc-500 font-mono mt-1">
+                  <p className="text-[11px] text-sky-400 font-mono mt-1">
                     {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
                   </p>
                 )}
 
-                {/* Media Embed */}
+                {/* Media Attachment */}
                 {displayMedia && (
-                  <div className="mt-2 rounded-lg overflow-hidden border border-zinc-800 aspect-video bg-zinc-900">
+                  <div className="mt-2 rounded-md overflow-hidden border border-zinc-800/90 aspect-video bg-zinc-900">
                     <img
                       src={displayMedia}
                       alt="Tweet Media"
@@ -305,21 +378,25 @@ export default function LiveDevicePreview({
                   </div>
                 )}
 
-                {/* Action Bar */}
-                <div className="flex items-center justify-between mt-2 text-zinc-500 text-[11px] max-w-[220px]">
-                  <div className="flex items-center gap-1 hover:text-zinc-300 cursor-pointer">
+                {/* X Engagement Metrics Bar */}
+                <div className="flex items-center justify-between mt-2.5 text-zinc-500 text-[11px]">
+                  <div className="flex items-center gap-1 hover:text-sky-400 transition-colors cursor-pointer">
                     <FiMessageCircle className="text-xs" />
-                    <span>32</span>
+                    <span>34</span>
                   </div>
-                  <div className="flex items-center gap-1 hover:text-zinc-300 cursor-pointer">
+                  <div className="flex items-center gap-1 hover:text-emerald-400 transition-colors cursor-pointer">
                     <FiRepeat className="text-xs" />
-                    <span>18</span>
+                    <span>56</span>
                   </div>
-                  <div className="flex items-center gap-1 hover:text-zinc-300 cursor-pointer">
+                  <div className="flex items-center gap-1 hover:text-rose-500 transition-colors cursor-pointer">
                     <FiHeart className="text-xs" />
-                    <span>142</span>
+                    <span>412</span>
                   </div>
-                  <div className="flex items-center gap-1 hover:text-zinc-300 cursor-pointer">
+                  <div className="flex items-center gap-1 hover:text-sky-400 transition-colors cursor-pointer">
+                    <FiBarChart2 className="text-xs" />
+                    <span>12.8K</span>
+                  </div>
+                  <div className="flex items-center gap-1 hover:text-zinc-300 transition-colors cursor-pointer">
                     <FiBookmark className="text-xs" />
                   </div>
                 </div>
@@ -330,37 +407,50 @@ export default function LiveDevicePreview({
 
         {/* LINKEDIN MOCKUP */}
         {activePreviewTab === "linkedin" && (
-          <div className="w-full max-w-[320px] mx-auto bg-zinc-900/90 rounded-xl border border-zinc-800 p-3.5 text-zinc-100 space-y-2">
+          <div className="w-full max-w-[340px] mx-auto bg-zinc-900 border border-zinc-800 rounded-lg p-3.5 text-zinc-100 space-y-2.5 shadow-xl animate-fade-in">
             {/* Header */}
             <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center font-medium text-xs border border-zinc-700">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs border border-blue-500/40 shrink-0">
                   {displayAccount.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h5 className="text-[11px] font-medium leading-tight">{displayAccount}</h5>
-                  <p className="text-[9px] text-zinc-500 leading-tight">Creator</p>
+                  <div className="flex items-center gap-1">
+                    <h5 className="text-xs font-bold leading-tight text-zinc-100">{displayAccount}</h5>
+                    <span className="text-[10px] text-zinc-500 font-medium">• 1st</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-400 leading-tight">Creator & AI Strategist</p>
+                  <p className="text-[9px] text-zinc-500 leading-tight flex items-center gap-1 mt-0.5">
+                    <span>2h</span>
+                    <span>•</span>
+                    <FaGlobeAmericas className="text-[8px]" />
+                  </p>
                 </div>
               </div>
-              <FiMoreHorizontal className="text-zinc-500 text-xs" />
+              <button
+                type="button"
+                className="text-blue-400 hover:text-blue-300 font-semibold text-xs flex items-center gap-0.5"
+              >
+                <FiPlus className="text-xs" /> Follow
+              </button>
             </div>
 
             {/* Post Content */}
-            <p className="text-[11px] text-zinc-300 leading-relaxed line-clamp-3">
-              <span className="font-medium text-zinc-100">{displayTitle}</span>
+            <p className="text-xs text-zinc-300 leading-relaxed line-clamp-3">
+              <span className="font-semibold text-zinc-100">{displayTitle}</span>
               {" "}
               {displayDescription}
             </p>
 
             {tags && (
-              <p className="text-[10px] text-zinc-500 font-mono">
+              <p className="text-[10px] text-blue-400 font-mono">
                 {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
               </p>
             )}
 
             {/* Media */}
             {displayMedia && (
-              <div className="rounded-lg overflow-hidden border border-zinc-800 aspect-video bg-black">
+              <div className="rounded-md overflow-hidden border border-zinc-800 aspect-video bg-black">
                 <img
                   src={displayMedia}
                   alt="LinkedIn Media"
@@ -369,23 +459,108 @@ export default function LiveDevicePreview({
               </div>
             )}
 
-            {/* Engagement */}
-            <div className="pt-2 border-t border-zinc-800 flex items-center justify-around text-zinc-400 text-[10px]">
-              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-0.5">
+            {/* LinkedIn Reactions Counter */}
+            <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-1 border-b border-zinc-800/80 pb-2">
+              <div className="flex items-center gap-1">
+                <div className="flex items-center -space-x-1">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[8px]">👍</span>
+                  <span className="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center text-[8px]">❤️</span>
+                  <span className="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center text-[8px]">💡</span>
+                </div>
+                <span className="ml-1">482</span>
+              </div>
+              <span>38 comments • 12 reposts</span>
+            </div>
+
+            {/* LinkedIn Action Bar */}
+            <div className="flex items-center justify-around text-zinc-400 text-[11px] pt-0.5">
+              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-1">
                 <FiThumbsUp className="text-xs" />
                 <span>Like</span>
               </div>
-              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-0.5">
+              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-1">
                 <FiMessageCircle className="text-xs" />
                 <span>Comment</span>
               </div>
-              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-0.5">
+              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-1">
                 <FiRepeat className="text-xs" />
                 <span>Repost</span>
               </div>
-              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-0.5">
+              <div className="flex items-center gap-1 hover:text-zinc-200 cursor-pointer py-1">
                 <FiSend className="text-xs" />
                 <span>Send</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* THREADS MOCKUP */}
+        {activePreviewTab === "threads" && (
+          <div className="w-full max-w-[340px] mx-auto bg-zinc-950 border border-zinc-800 rounded-lg p-3.5 text-zinc-100 shadow-xl animate-fade-in">
+            <div className="flex items-start gap-3">
+              {/* Left Column: Avatar + Thread Connector Line */}
+              <div className="flex flex-col items-center shrink-0 self-stretch">
+                <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-xs text-zinc-200">
+                  {displayAccount.charAt(0).toUpperCase()}
+                </div>
+                {/* Vertical thread connection line */}
+                <div className="w-0.5 flex-1 bg-zinc-800 my-1.5 min-h-[36px]" />
+                {/* Second mini reply avatar indicator */}
+                <div className="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[8px] text-zinc-400 font-bold">
+                  +
+                </div>
+              </div>
+
+              {/* Right Column: Thread Content */}
+              <div className="flex-1 min-w-0 space-y-2">
+                {/* Author & Timestamp */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="text-xs font-bold text-zinc-100 truncate">
+                      {handle.replace("@", "")}
+                    </span>
+                    <span className="text-[10px] text-zinc-500">1h</span>
+                  </div>
+                  <FiMoreHorizontal className="text-zinc-500 text-xs shrink-0 cursor-pointer hover:text-zinc-300" />
+                </div>
+
+                {/* Thread Body */}
+                <p className="text-xs text-zinc-200 leading-relaxed whitespace-pre-line">
+                  {displayTitle ? `${displayTitle}\n\n` : ""}{displayDescription}
+                </p>
+
+                {/* Tags */}
+                {tags && (
+                  <p className="text-[11px] text-purple-400 font-mono">
+                    {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
+                  </p>
+                )}
+
+                {/* Media Attachment */}
+                {displayMedia && (
+                  <div className="rounded-md overflow-hidden border border-zinc-850 aspect-video bg-zinc-900 mt-2">
+                    <img
+                      src={displayMedia}
+                      alt="Threads Media"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                {/* Threads Action Row */}
+                <div className="flex items-center gap-4 pt-1 text-zinc-300 text-sm">
+                  <FiHeart className="hover:text-rose-500 transition-colors cursor-pointer" />
+                  <FiMessageCircle className="hover:text-zinc-100 transition-colors cursor-pointer" />
+                  <FiRepeat className="hover:text-emerald-400 transition-colors cursor-pointer" />
+                  <FiSend className="hover:text-zinc-100 transition-colors cursor-pointer" />
+                </div>
+
+                {/* Thread Replies & Likes Summary */}
+                <div className="flex items-center gap-1.5 pt-0.5 text-[10px] text-zinc-500">
+                  <span>18 replies</span>
+                  <span>•</span>
+                  <span>142 likes</span>
+                </div>
               </div>
             </div>
           </div>

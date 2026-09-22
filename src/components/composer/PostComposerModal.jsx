@@ -235,24 +235,29 @@ export default function PostComposerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm overflow-hidden">
       <div 
-        className="relative w-full max-w-5xl bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]"
+        className="relative w-full max-w-5xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[88vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800 bg-zinc-950">
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">
-              {initialPost ? "Edit Scheduled Post" : "Create Post"}
-            </h3>
-            <p className="text-xs text-zinc-400">
-              Multi-channel scheduling with live preview
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-md shadow-blue-600/30">
+              P
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-black text-white tracking-wide uppercase">
+                {initialPost ? "EDIT SCHEDULED POST" : "COMPOSE & SCHEDULE POST"}
+              </h3>
+              <p className="text-xs text-zinc-400">
+                Multi-channel scheduling with real-time feed preview
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setAiWriterOpen(!aiWriterOpen)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
+              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
                 aiWriterOpen
                   ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-400/40 shadow-md shadow-violet-500/30"
                   : "bg-gradient-to-r from-violet-600/15 to-indigo-600/15 text-violet-300 border-violet-500/30 hover:border-violet-500/60 hover:text-white"
@@ -285,18 +290,18 @@ export default function PostComposerModal({
             )}
 
             {errorMsg && (
-              <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-400 flex items-center gap-2">
+              <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-md text-xs text-red-400 flex items-center gap-2">
                 <FiInfo className="text-sm shrink-0" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
-            {/* Channel Selector */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400 block">
-                Channel
+            {/* 1. Channel Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
+                1. SELECT PUBLISHING CHANNEL
               </label>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                 {PLATFORMS.map((plat) => {
                   const Icon = plat.Icon;
                   const isSelected = selectedPlatform === plat.key;
@@ -305,7 +310,7 @@ export default function PostComposerModal({
                       key={plat.key}
                       type="button"
                       onClick={() => setSelectedPlatform(plat.key)}
-                      className={`p-1.5 px-2 rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      className={`p-1.5 px-2 rounded-md border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         isSelected
                           ? plat.activeStyle
                           : "border-zinc-800/80 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
@@ -321,26 +326,26 @@ export default function PostComposerModal({
               </div>
             </div>
 
-            {/* Post Title */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-zinc-400 block">
-                Title
+            {/* 2. Post Title */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
+                2. POST TITLE / HEADLINE
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Post title or headline..."
-                className="w-full bg-zinc-900/40 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+                placeholder="Give your post a strong, clickable title..."
+                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
               />
             </div>
 
-            {/* Caption & Content */}
-            <div className="space-y-1.5">
+            {/* 3. Caption & Content */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-medium text-zinc-400">
-                    Caption & Details
+                  <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase">
+                    3. CAPTION & DETAILS
                   </label>
                   {!aiWriterOpen && (
                     <button
@@ -362,8 +367,8 @@ export default function PostComposerModal({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
-                placeholder="Write your caption, hook, and hashtags..."
-                className="w-full bg-zinc-900/40 border border-zinc-800 rounded-lg p-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors resize-none leading-relaxed"
+                placeholder="Write your caption, hook, call to action, and hashtags..."
+                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md p-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors resize-none leading-relaxed"
               />
 
               {/* Hashtag Quick Chips */}
@@ -384,14 +389,14 @@ export default function PostComposerModal({
               </div>
             </div>
 
-            {/* Media Attachment */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400 block">
-                Media Attachment (Video / Image)
+            {/* 4. Media Attachment */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
+                4. MEDIA ATTACHMENT (VIDEO / IMAGE)
               </label>
 
               {mediaUrl ? (
-                <div className="relative rounded-lg overflow-hidden border border-zinc-800 bg-black aspect-video max-h-44 group">
+                <div className="relative rounded-md overflow-hidden border border-zinc-800 bg-black aspect-video max-h-44 group">
                   <img
                     src={mediaUrl}
                     alt="Media preview"
@@ -411,7 +416,7 @@ export default function PostComposerModal({
                 <div className="space-y-2">
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border border-dashed border-zinc-800 hover:border-zinc-700 bg-zinc-900/20 hover:bg-zinc-900/40 rounded-lg p-4 text-center cursor-pointer transition-colors flex flex-col items-center justify-center gap-1.5"
+                    className="border border-dashed border-zinc-800 hover:border-zinc-700 bg-zinc-900/20 hover:bg-zinc-900/40 rounded-md p-4 text-center cursor-pointer transition-colors flex flex-col items-center justify-center gap-1.5"
                   >
                     <div className="w-8 h-8 rounded-full bg-zinc-800/80 text-zinc-400 flex items-center justify-center">
                       <FiUploadCloud className="text-base" />
@@ -440,7 +445,7 @@ export default function PostComposerModal({
                       value={mediaUrl}
                       onChange={(e) => setMediaUrl(e.target.value)}
                       placeholder="Or paste media URL directly (https://...)"
-                      className="w-full bg-zinc-900/40 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+                      className="w-full bg-zinc-900/40 border border-zinc-800 rounded-md pl-8 pr-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
                     />
                   </div>
                 </div>
@@ -448,7 +453,7 @@ export default function PostComposerModal({
             </div>
 
             {/* Platform Specific Settings Accordion */}
-            <div className="border border-zinc-800 rounded-lg overflow-hidden bg-zinc-900/20">
+            <div className="border border-zinc-800 rounded-md overflow-hidden bg-zinc-900/20">
               <button
                 type="button"
                 onClick={() => setAdvancedOpen(!advancedOpen)}
@@ -546,16 +551,16 @@ export default function PostComposerModal({
               )}
             </div>
 
-            {/* Scheduling Controls */}
-            <div className="p-3 bg-zinc-900/30 border border-zinc-800 rounded-lg space-y-2.5">
+            {/* 5. Scheduling Controls */}
+            <div className="p-3.5 bg-zinc-900/40 border border-zinc-800 rounded-md space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <FiCalendar className="text-zinc-400 text-xs" />
-                  <span className="text-xs font-medium text-zinc-300">
-                    Schedule Publishing
+                  <span className="text-xs font-bold text-zinc-300 tracking-wider uppercase">
+                    5. SCHEDULE & PUBLISH OPTIONS
                   </span>
                 </div>
-                <div className="flex items-center bg-zinc-900 p-0.5 rounded-lg border border-zinc-800 text-xs">
+                <div className="flex items-center bg-zinc-900 p-0.5 rounded-md border border-zinc-800 text-xs">
                   <button
                     type="button"
                     onClick={() => setIsScheduled(false)}
@@ -620,7 +625,7 @@ export default function PostComposerModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-md text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -630,7 +635,7 @@ export default function PostComposerModal({
               type="button"
               disabled={submitting}
               onClick={() => handleSubmit("draft")}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 rounded-md text-xs font-bold text-zinc-300 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors cursor-pointer"
             >
               Save as Draft
             </button>
@@ -639,11 +644,11 @@ export default function PostComposerModal({
               type="button"
               disabled={submitting}
               onClick={() => handleSubmit()}
-              className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-indigo-500/25 active:scale-95 disabled:opacity-50"
+              className="px-4 py-1.5 rounded-md text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30 active:scale-95 disabled:opacity-50"
             >
               {submitting ? (
                 <>
-                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Saving...</span>
                 </>
               ) : (

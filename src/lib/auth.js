@@ -16,11 +16,11 @@ export const authOptions = {
     CredentialsProvider({
       name: "Demo / Admin Account",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "demo@postiz.local" },
+        email: { label: "Email", type: "email", placeholder: "demo@creator.local" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const email = credentials?.email?.trim().toLowerCase() || "demo@postiz.local";
+        const email = credentials?.email?.trim().toLowerCase() || "demo@creator.local";
         const name = email.split("@")[0].toUpperCase();
 
         try {

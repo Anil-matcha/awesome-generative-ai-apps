@@ -383,7 +383,7 @@ export default function IntegrationsPage() {
 
         {/* Guest Warning alert */}
         {!session?.user && (
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <FiAlertTriangle className="text-amber-500 text-lg shrink-0" />
               <div className="flex flex-col gap-0.5">
@@ -413,7 +413,7 @@ export default function IntegrationsPage() {
                 {/* Platform main row */}
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
                       <Icon className={`text-xl ${iconColor}`} />
                     </div>
                     <div className="flex flex-col">
@@ -467,7 +467,7 @@ export default function IntegrationsPage() {
                       <div className="h-10 w-full bg-zinc-900/60 rounded-lg animate-pulse" />
                     ) : connected.length > 0 ? (
                       connected.map((acc) => (
-                        <div key={acc.id} className="bg-zinc-900/50 rounded-xl px-4 py-3 border border-zinc-900 flex items-center justify-between gap-3">
+                        <div key={acc.id} className="bg-zinc-900/50 rounded-lg px-4 py-3 border border-zinc-900 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2 truncate">
                             {renamingId === acc.id ? (
                               <input

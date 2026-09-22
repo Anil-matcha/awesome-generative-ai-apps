@@ -160,8 +160,8 @@ export default function WorkspaceDashboard() {
 
           {/* Feature Highlights Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-10 text-left">
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
-              <div className="w-8 h-8 rounded-lg bg-zinc-800/60 text-zinc-300 flex items-center justify-center text-xs">
+            <div className="p-4 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
+              <div className="w-8 h-8 rounded-md bg-zinc-800/60 text-zinc-300 flex items-center justify-center text-xs">
                 <FaCalendarAlt />
               </div>
               <h4 className="text-xs font-medium text-zinc-200">
@@ -172,8 +172,8 @@ export default function WorkspaceDashboard() {
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
-              <div className="w-8 h-8 rounded-lg bg-zinc-800/60 text-zinc-300 flex items-center justify-center text-xs">
+            <div className="p-4 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
+              <div className="w-8 h-8 rounded-md bg-zinc-800/60 text-zinc-300 flex items-center justify-center text-xs">
                 <FaShareAlt />
               </div>
               <h4 className="text-xs font-medium text-zinc-200">
@@ -184,8 +184,8 @@ export default function WorkspaceDashboard() {
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
-              <div className="w-8 h-8 rounded-lg bg-zinc-800/60 text-zinc-300 flex items-center justify-center text-xs">
+            <div className="p-4 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
+              <div className="w-8 h-8 rounded-md bg-zinc-800/60 text-zinc-300 flex items-center justify-center text-xs">
                 <FaRocket />
               </div>
               <h4 className="text-xs font-medium text-zinc-200">
@@ -204,59 +204,113 @@ export default function WorkspaceDashboard() {
   return (
     <div className="min-h-screen bg-bg-page text-zinc-100 p-4 sm:p-6 lg:p-8 space-y-6 pb-20">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Clean, Vibrant Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/60">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-indigo-300">
-              Content Calendar
-            </h1>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              Schedule, preview, and organize posts across all channels
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap justify-between sm:justify-end">
-            {/* Vibrant Stats Pill */}
-            <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-zinc-900/80 border border-zinc-800 text-xs text-zinc-300 shadow-sm">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-400 shadow-sm shadow-blue-400/50 animate-pulse" />
-                <strong className="text-blue-400 font-bold">{scheduledCount}</strong> scheduled
-              </span>
-              <span className="text-zinc-700">|</span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" />
-                <strong className="text-emerald-400 font-bold">{publishedCount}</strong> published
-              </span>
-              <span className="text-zinc-700">|</span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-400 shadow-sm shadow-purple-400/50" />
-                <strong className="text-purple-400 font-bold">{uniqueChannels}</strong> channels
-              </span>
+        {/* Studio Active Status & Header */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/80 animate-pulse" />
+                <span className="text-[11px] font-bold text-emerald-400 tracking-widest uppercase font-mono">
+                  CREATOR STUDIO ACTIVE
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
+                SOCIAL MEDIA SCHEDULING CALENDAR
+              </h1>
             </div>
 
-            <button
-              onClick={fetchPosts}
-              className="p-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
-              title="Refresh calendar"
-            >
-              <FiRefreshCw className={`text-xs ${loading ? "animate-spin text-zinc-200" : ""}`} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={fetchPosts}
+                className="w-9 h-9 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer flex items-center justify-center shadow-sm"
+                title="Refresh calendar"
+              >
+                <FiRefreshCw className={`text-xs ${loading ? "animate-spin text-white" : ""}`} />
+              </button>
 
-            <button
-              onClick={handleWriteWithAi}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-violet-400/30 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-violet-600/25 active:scale-95"
-            >
-              <FaBolt className="text-[11px] text-amber-300" />
-              <span>Write with AI</span>
-            </button>
+              <button
+                onClick={handleWriteWithAi}
+                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-violet-400/30 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-violet-600/25 active:scale-95"
+                title="Compose post with AI"
+              >
+                <FaBolt className="text-[11px] text-amber-300" />
+                <span>Write with AI</span>
+              </button>
 
-            <button
-              onClick={handleNewPost}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 border border-indigo-500/40 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-indigo-600/25 active:scale-95"
-            >
-              <FiPlus className="text-xs" />
-              <span>New Post</span>
-            </button>
+              <button
+                onClick={handleNewPost}
+                className="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-600/30 active:scale-95"
+              >
+                <FiPlus className="text-xs font-bold" />
+                <span>CREATE POST</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 4 Prominent Stat Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Card 1: Scheduled */}
+            <div className="p-3.5 rounded-lg bg-zinc-900/70 border border-zinc-800/80 flex items-center justify-between shadow-sm">
+              <div className="space-y-0.5">
+                <span className="text-[11px] font-semibold text-zinc-400 tracking-wider uppercase">
+                  SCHEDULED
+                </span>
+                <p className="text-2xl font-bold text-blue-500 font-mono">
+                  {scheduledCount}
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center text-xs shadow-sm shadow-blue-500/20">
+                <FaClock />
+              </div>
+            </div>
+
+            {/* Card 2: Published */}
+            <div className="p-3.5 rounded-lg bg-zinc-900/70 border border-zinc-800/80 flex items-center justify-between shadow-sm">
+              <div className="space-y-0.5">
+                <span className="text-[11px] font-semibold text-zinc-400 tracking-wider uppercase">
+                  PUBLISHED
+                </span>
+                <p className="text-2xl font-bold text-emerald-500 font-mono">
+                  {publishedCount}
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xs shadow-sm shadow-emerald-500/20">
+                <FaCheckCircle />
+              </div>
+            </div>
+
+            {/* Card 3: Connected Channels */}
+            <div className="p-3.5 rounded-lg bg-zinc-900/70 border border-zinc-800/80 flex items-center justify-between shadow-sm">
+              <div className="space-y-0.5">
+                <span className="text-[11px] font-semibold text-zinc-400 tracking-wider uppercase">
+                  CONNECTED CHANNELS
+                </span>
+                <p className="text-2xl font-bold text-purple-500 font-mono">
+                  {uniqueChannels}
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xs shadow-sm shadow-purple-500/20">
+                <FaShareAlt />
+              </div>
+            </div>
+
+            {/* Card 4: Credits Balance */}
+            <div className="p-3.5 rounded-lg bg-zinc-900/70 border border-zinc-800/80 flex items-center justify-between shadow-sm">
+              <div className="space-y-0.5">
+                <span className="text-[11px] font-semibold text-zinc-400 tracking-wider uppercase">
+                  CREDITS BALANCE
+                </span>
+                <p className="text-2xl font-bold text-amber-400 font-mono">
+                  {userCredits}
+                </p>
+              </div>
+              <Link
+                href="/pricing"
+                className="px-3 py-1 rounded-md text-xs font-semibold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 transition-all shadow-sm"
+              >
+                Top Up
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -276,7 +330,7 @@ export default function WorkspaceDashboard() {
           onClick={() => setViewingPost(null)}
         >
           <div 
-            className="w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-xl p-5 shadow-xl space-y-4"
+            className="w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-lg p-5 shadow-xl space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

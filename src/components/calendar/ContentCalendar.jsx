@@ -194,7 +194,7 @@ export default function ContentCalendar({
   };
 
   return (
-    <div className="flex flex-col bg-zinc-950 border border-zinc-800/80 rounded-xl overflow-hidden shadow-sm">
+    <div className="flex flex-col bg-zinc-950 border border-zinc-800/80 rounded-lg overflow-hidden shadow-sm">
       {/* Calendar Header & Minimal Toolbar */}
       <div className="p-3.5 sm:p-4 border-b border-zinc-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/30">
         {/* Left: Date Navigation */}
@@ -225,7 +225,7 @@ export default function ContentCalendar({
             </button>
           </div>
 
-          <h2 className="text-sm font-semibold text-zinc-100 tracking-tight">
+          <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-wider">
             {monthName}
           </h2>
         </div>
@@ -234,7 +234,7 @@ export default function ContentCalendar({
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap justify-between sm:justify-end">
           {/* Platform Filter Pills */}
           <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs">
-            {["all", "youtube", "tiktok", "instagram", "x_twitter", "linkedin", "threads"].map((platKey) => {
+            {["all", "youtube", "tiktok", "instagram", "x_twitter", "linkedin"].map((platKey) => {
               const isActive = platformFilter === platKey;
               const plat = PLATFORM_CONFIG[platKey];
               const Icon = plat?.Icon;
@@ -246,7 +246,7 @@ export default function ContentCalendar({
                   className={`px-2 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                     isActive
                       ? platKey === "all"
-                        ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/30 font-semibold"
+                        ? "bg-zinc-800 text-white font-bold shadow-sm"
                         : plat?.activePill || "bg-zinc-800 text-white"
                       : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                   }`}
@@ -263,9 +263,9 @@ export default function ContentCalendar({
             <button
               type="button"
               onClick={() => setViewMode("month")}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                 viewMode === "month" 
-                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/25 font-semibold" 
+                  ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30 font-bold" 
                   : "text-zinc-400 hover:text-white"
               }`}
             >
@@ -274,15 +274,27 @@ export default function ContentCalendar({
             <button
               type="button"
               onClick={() => setViewMode("week")}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                 viewMode === "week" 
-                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/25 font-semibold" 
+                  ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30 font-bold" 
                   : "text-zinc-400 hover:text-white"
               }`}
             >
               Week
             </button>
           </div>
+
+          {/* New Post Button in Calendar Toolbar */}
+          {onNewPostClick && (
+            <button
+              type="button"
+              onClick={onNewPostClick}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-600/40 active:scale-95"
+            >
+              <FaPlus className="text-[10px]" />
+              <span>NEW POST</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -290,14 +302,14 @@ export default function ContentCalendar({
       {viewMode === "month" && (
         <div className="flex flex-col">
           {/* Day of Week Header */}
-          <div className="grid grid-cols-7 border-b border-zinc-800/60 bg-zinc-900/50 text-center py-2 text-xs font-semibold text-zinc-400">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
+          <div className="grid grid-cols-7 border-b border-zinc-800/60 bg-zinc-900/50 text-center py-2.5 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+            <span>MON</span>
+            <span>TUE</span>
+            <span>WED</span>
+            <span>THU</span>
+            <span>FRI</span>
+            <span>SAT</span>
+            <span>SUN</span>
           </div>
 
           {/* Calendar Grid */}

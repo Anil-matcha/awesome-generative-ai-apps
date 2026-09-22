@@ -39,7 +39,7 @@ export default function Navbar() {
         
         {/* Logo and Brand Title (Visible at all times) */}
         <Link href="/" className="flex items-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-95">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 text-white font-extrabold text-lg shadow-md shadow-indigo-500/30">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 text-white font-extrabold text-lg shadow-md shadow-indigo-500/30">
             {logoLetter}
           </div>
           <span className="text-lg font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-indigo-300 text-nowrap">

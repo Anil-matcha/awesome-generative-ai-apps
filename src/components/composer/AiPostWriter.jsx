@@ -65,15 +65,15 @@ export default function AiPostWriter({
   };
 
   return (
-    <div className="bg-gradient-to-b from-violet-950/20 via-zinc-900/70 to-zinc-900/90 border border-violet-500/30 rounded-xl p-4 space-y-3.5 text-xs text-zinc-100 shadow-xl shadow-violet-950/20 animate-fade-in">
+    <div className="bg-gradient-to-b from-violet-950/20 via-zinc-900/70 to-zinc-900/90 border border-violet-500/30 rounded-lg p-4 space-y-3.5 text-xs text-zinc-100 shadow-xl shadow-violet-950/20 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between pb-2.5 border-b border-violet-500/20">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-violet-500/30">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-violet-500/30">
             <FaMagic className="text-[11px]" />
           </div>
           <span className="font-semibold text-zinc-100">
-            Write with AI <span className="text-[10px] text-violet-300 font-mono font-normal">(gpt-5-mini)</span>
+            Write with AI
           </span>
           <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-semibold ${
             platform === "youtube" ? "bg-red-500/20 text-red-400 border border-red-500/30" :
@@ -100,7 +100,7 @@ export default function AiPostWriter({
       </div>
 
       {error && (
-        <div className="p-2.5 bg-red-500/10 border border-red-500/30 rounded-lg text-[11px] text-red-400 flex items-center gap-1.5">
+        <div className="p-2.5 bg-red-500/10 border border-red-500/30 rounded-md text-[11px] text-red-400 flex items-center gap-1.5">
           <FiAlertCircle className="text-xs shrink-0" />
           <span>{error}</span>
         </div>
@@ -116,7 +116,7 @@ export default function AiPostWriter({
           onChange={(e) => setPrompt(e.target.value)}
           rows={2}
           placeholder="e.g. Announce our new AI scheduling tool with key benefits, or share 3 productivity tips for creators..."
-          className="w-full bg-zinc-950/80 border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-violet-500/60 focus:ring-1 focus:ring-violet-500/30 resize-none transition-all leading-relaxed"
+          className="w-full bg-zinc-950/80 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-violet-500/60 focus:ring-1 focus:ring-violet-500/30 resize-none transition-all leading-relaxed"
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
               handleGenerate();
@@ -158,12 +158,12 @@ export default function AiPostWriter({
           type="button"
           disabled={loading}
           onClick={handleGenerate}
-          className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-violet-500/30 active:scale-95 disabled:opacity-50"
+          className="px-4 py-1.5 rounded-md text-xs font-semibold text-white bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-violet-500/30 active:scale-95 disabled:opacity-50"
         >
           {loading ? (
             <>
               <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Generating with gpt-5-mini...</span>
+              <span>Generating...</span>
             </>
           ) : (
             <>
@@ -176,7 +176,7 @@ export default function AiPostWriter({
 
       {/* Generated Result Preview */}
       {generatedResult && (
-        <div className="mt-3 p-3.5 rounded-lg bg-zinc-950/90 border border-violet-500/30 space-y-2.5 animate-fade-in shadow-inner">
+        <div className="mt-3 p-3.5 rounded-md bg-zinc-950/90 border border-violet-500/30 space-y-2.5 animate-fade-in shadow-inner">
           <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
             <span className="text-[11px] font-semibold text-violet-300 flex items-center gap-1">
               <FaMagic className="text-[10px]" /> Generated Suggestion
@@ -233,7 +233,7 @@ export default function AiPostWriter({
             <button
               type="button"
               onClick={handlePrefill}
-              className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-500/25 active:scale-95"
+              className="px-4 py-1.5 rounded-md text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-500/25 active:scale-95"
             >
               <FaCheck className="text-[10px]" />
               <span>Prefill into Composer</span>
