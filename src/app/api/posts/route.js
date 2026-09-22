@@ -9,29 +9,63 @@ import { DemoStore } from "@/lib/demo-store";
 // Helper function to call the MuAPI publishing endpoints
 async function triggerMuApiPublish(platform, payload) {
   const apiKey = config.ai.apiKey;
-  const endpoint = platform === "youtube" 
-    ? "https://api.muapi.ai/api/v1/youtube-publish" 
-    : "https://api.muapi.ai/api/v1/tiktok-publish";
+  const plat = (platform || "").toLowerCase().replace("x_twitter", "x");
 
-  // Re-map keys if needed for each platform
+  const endpointMap = {
+    youtube: "https://api.muapi.ai/api/v1/youtube-publish",
+    tiktok: "https://api.muapi.ai/api/v1/tiktok-publish",
+    instagram: "https://api.muapi.ai/api/v1/instagram-publish",
+    x: "https://api.muapi.ai/api/v1/x-publish",
+    facebook: "https://api.muapi.ai/api/v1/facebook-publish",
+    linkedin: "https://api.muapi.ai/api/v1/linkedin-publish",
+    threads: "https://api.muapi.ai/api/v1/threads-publish",
+    pinterest: "https://api.muapi.ai/api/v1/pinterest-publish",
+  };
+
+  const endpoint = endpointMap[plat] || endpointMap.youtube;
+
+  const captionText = [
+    payload.title,
+    payload.description,
+    payload.tags ? payload.tags.split(",").map(t => t.trim().startsWith("#") ? t.trim() : `#${t.trim()}`).join(" ") : ""
+  ].filter(Boolean).join("\n\n");
+
   const bodyData = {
     account_id: parseInt(payload.accountId),
     media_url: payload.mediaUrl
   };
 
-  if (platform === "youtube") {
+  if (plat === "youtube") {
     bodyData.title = payload.title || "Untitled Video";
     bodyData.description = payload.description || "";
     bodyData.tags = payload.tags ? payload.tags.split(",").map(t => t.trim()) : [];
     bodyData.privacy = payload.privacy || "public";
     if (payload.categoryId) bodyData.category_id = payload.categoryId;
     bodyData.made_for_kids = payload.madeForKids || false;
-  } else {
-    bodyData.title = payload.title || ""; // TikTok caption
+  } else if (plat === "tiktok") {
+    bodyData.title = payload.title || captionText;
     bodyData.privacy_level = payload.privacy || "PUBLIC_TO_EVERYONE";
     bodyData.disable_comment = payload.disableComment || false;
     bodyData.disable_duet = payload.disableDuet || false;
     bodyData.disable_stitch = payload.disableStitch || false;
+  } else if (plat === "instagram") {
+    bodyData.caption = captionText;
+    bodyData.placement = "reels";
+    bodyData.share_to_feed = true;
+  } else if (plat === "x") {
+    bodyData.caption = captionText.substring(0, 280);
+    bodyData.reply_settings = "everyone";
+  } else if (plat === "facebook") {
+    bodyData.caption = captionText;
+    bodyData.placement = "timeline";
+  } else if (plat === "linkedin") {
+    bodyData.caption = captionText;
+  } else if (plat === "threads") {
+    bodyData.caption = captionText.substring(0, 500);
+    bodyData.placement = "timeline";
+  } else if (plat === "pinterest") {
+    bodyData.title = payload.title || "Untitled Pin";
+    bodyData.caption = payload.description || captionText;
   }
 
   const res = await fetch(endpoint, {
@@ -137,8 +171,7 @@ export async function GET(req) {
 
           if (status === "completed" || status === "succeeded") {
             const output = result.output || {};
-            // For YouTube, it returns url. For TikTok, it returns publish_id
-            const publishedUrl = output.url || (output.publish_id ? `https://tiktok.com/publish/${output.publish_id}` : null);
+            const publishedUrl = output.url || output.x_url || output.instagram_url || output.facebook_url || output.linkedin_url || output.threads_url || output.pinterest_url || (output.publish_id ? `https://${post.platform}.com/post/${output.publish_id}` : null);
             
             await prisma.scheduledPost.update({
               where: { id: post.id },

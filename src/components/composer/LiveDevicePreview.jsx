@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaYoutube, FaInstagram, FaLinkedin, FaCheckCircle, FaGlobeAmericas } from "react-icons/fa";
+import { FaYoutube, FaInstagram, FaFacebook, FaLinkedin, FaPinterest, FaCheckCircle, FaGlobeAmericas } from "react-icons/fa";
 import { FaXTwitter, FaThreads } from "react-icons/fa6";
 import { SiTiktok } from "react-icons/si";
 import { 
@@ -48,8 +48,10 @@ export default function LiveDevicePreview({
     { key: "tiktok", name: "TikTok", Icon: SiTiktok, color: "text-cyan-400", activeStyle: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm shadow-cyan-500/20" },
     { key: "instagram", name: "Instagram", Icon: FaInstagram, color: "text-pink-500", activeStyle: "bg-pink-500/20 text-pink-400 border border-pink-500/40 shadow-sm shadow-pink-500/20" },
     { key: "x_twitter", name: "X", Icon: FaXTwitter, color: "text-sky-400", activeStyle: "bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm shadow-sky-500/20" },
+    { key: "facebook", name: "Facebook", Icon: FaFacebook, color: "text-blue-600", activeStyle: "bg-blue-600/20 text-blue-400 border border-blue-600/40 shadow-sm shadow-blue-600/20" },
     { key: "linkedin", name: "LinkedIn", Icon: FaLinkedin, color: "text-blue-500", activeStyle: "bg-blue-500/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/20" },
     { key: "threads", name: "Threads", Icon: FaThreads, color: "text-purple-400", activeStyle: "bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-sm shadow-purple-500/20" },
+    { key: "pinterest", name: "Pinterest", Icon: FaPinterest, color: "text-rose-500", activeStyle: "bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-sm shadow-rose-500/20" },
   ];
 
   return (
@@ -405,6 +407,85 @@ export default function LiveDevicePreview({
           </div>
         )}
 
+        {/* FACEBOOK MOCKUP */}
+        {activePreviewTab === "facebook" && (
+          <div className="w-full max-w-[340px] mx-auto bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden text-zinc-100 shadow-xl animate-fade-in">
+            {/* Post Header */}
+            <div className="flex items-center justify-between p-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-blue-600 border border-blue-400/30 flex items-center justify-center font-bold text-xs text-white shrink-0">
+                  {displayAccount.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs font-bold text-zinc-100 leading-tight">{displayAccount}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] text-zinc-400 leading-tight mt-0.5">
+                    <span>3h</span>
+                    <span>·</span>
+                    <FaGlobeAmericas className="text-[9px]" />
+                  </div>
+                </div>
+              </div>
+              <FiMoreHorizontal className="text-zinc-400 text-xs cursor-pointer hover:text-white" />
+            </div>
+
+            {/* Post Text */}
+            <div className="px-3 pb-2 text-xs text-zinc-200 leading-relaxed whitespace-pre-line">
+              {displayTitle && <p className="font-semibold mb-1 text-zinc-100">{displayTitle}</p>}
+              <p className="line-clamp-3">{displayDescription}</p>
+              {tags && (
+                <p className="text-[11px] text-blue-400 font-mono mt-1">
+                  {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
+                </p>
+              )}
+            </div>
+
+            {/* Media Canvas */}
+            {displayMedia && (
+              <div className="aspect-video bg-black overflow-hidden border-t border-b border-zinc-800">
+                <img
+                  src={displayMedia}
+                  alt="Facebook Post Media"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            {/* Reactions & Engagement Summary */}
+            <div className="px-3 py-2 flex items-center justify-between text-[11px] text-zinc-400 border-b border-zinc-800">
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center -space-x-1">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[8px]">👍</span>
+                  <span className="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center text-[8px]">❤️</span>
+                </div>
+                <span>1.4K</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>94 comments</span>
+                <span>·</span>
+                <span>28 shares</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="px-2 py-1 flex items-center justify-around text-zinc-400 text-xs">
+              <button type="button" className="flex items-center gap-1.5 py-1 px-3 hover:text-blue-400 transition-colors cursor-pointer">
+                <FiThumbsUp className="text-xs" />
+                <span>Like</span>
+              </button>
+              <button type="button" className="flex items-center gap-1.5 py-1 px-3 hover:text-zinc-200 transition-colors cursor-pointer">
+                <FiMessageCircle className="text-xs" />
+                <span>Comment</span>
+              </button>
+              <button type="button" className="flex items-center gap-1.5 py-1 px-3 hover:text-zinc-200 transition-colors cursor-pointer">
+                <FiShare2 className="text-xs" />
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* LINKEDIN MOCKUP */}
         {activePreviewTab === "linkedin" && (
           <div className="w-full max-w-[340px] mx-auto bg-zinc-900 border border-zinc-800 rounded-lg p-3.5 text-zinc-100 space-y-2.5 shadow-xl animate-fade-in">
@@ -561,6 +642,69 @@ export default function LiveDevicePreview({
                   <span>•</span>
                   <span>142 likes</span>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PINTEREST MOCKUP */}
+        {activePreviewTab === "pinterest" && (
+          <div className="w-[260px] mx-auto bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-zinc-100 shadow-xl animate-fade-in flex flex-col">
+            {/* Pin Media Card with Red Save Badge */}
+            <div className="relative aspect-[3/4] bg-black overflow-hidden group">
+              <img
+                src={displayMedia}
+                alt="Pinterest Pin"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute top-2.5 right-2.5">
+                <button
+                  type="button"
+                  className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-full shadow-lg transition-colors cursor-pointer"
+                >
+                  Save
+                </button>
+              </div>
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                <span className="px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm text-[10px] text-zinc-200 truncate max-w-[150px]">
+                  muapi.ai
+                </span>
+                <div className="w-6 h-6 rounded-full bg-white/90 text-zinc-950 flex items-center justify-center text-[10px] shadow">
+                  <FiShare2 />
+                </div>
+              </div>
+            </div>
+
+            {/* Pin Details */}
+            <div className="p-3 space-y-2">
+              <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">
+                {displayTitle}
+              </h4>
+              <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
+                {displayDescription}
+              </p>
+              {tags && (
+                <p className="text-[10px] text-rose-400 font-mono truncate">
+                  {tags.split(",").map(t => `#${t.trim()}`).join(" ")}
+                </p>
+              )}
+
+              {/* Creator row */}
+              <div className="flex items-center justify-between pt-1 border-t border-zinc-800/80">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="w-5 h-5 rounded-full bg-rose-600 text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                    {displayAccount.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-[11px] font-medium text-zinc-300 truncate">
+                    {displayAccount}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 transition-colors"
+                >
+                  Follow
+                </button>
               </div>
             </div>
           </div>

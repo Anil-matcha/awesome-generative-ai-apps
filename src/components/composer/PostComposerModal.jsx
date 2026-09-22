@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { 
   FaYoutube, 
   FaInstagram, 
+  FaFacebook,
   FaLinkedin, 
   FaPinterest, 
   FaChevronDown, 
@@ -32,8 +33,10 @@ const PLATFORMS = [
   { key: "tiktok", name: "TikTok", Icon: SiTiktok, color: "text-cyan-400", activeStyle: "bg-cyan-500/15 border-cyan-400/60 text-white shadow-sm shadow-cyan-500/20", limit: 2200 },
   { key: "instagram", name: "Instagram", Icon: FaInstagram, color: "text-pink-500", activeStyle: "bg-pink-500/15 border-pink-500/60 text-white shadow-sm shadow-pink-500/20", limit: 2200 },
   { key: "x_twitter", name: "X (Twitter)", Icon: FaXTwitter, color: "text-sky-400", activeStyle: "bg-sky-500/15 border-sky-400/60 text-white shadow-sm shadow-sky-500/20", limit: 280 },
+  { key: "facebook", name: "Facebook", Icon: FaFacebook, color: "text-blue-600", activeStyle: "bg-blue-600/15 border-blue-600/60 text-white shadow-sm shadow-blue-600/20", limit: 63206 },
   { key: "linkedin", name: "LinkedIn", Icon: FaLinkedin, color: "text-blue-500", activeStyle: "bg-blue-500/15 border-blue-500/60 text-white shadow-sm shadow-blue-500/20", limit: 3000 },
   { key: "threads", name: "Threads", Icon: FaThreads, color: "text-purple-400", activeStyle: "bg-purple-500/15 border-purple-400/60 text-white shadow-sm shadow-purple-500/20", limit: 500 },
+  { key: "pinterest", name: "Pinterest", Icon: FaPinterest, color: "text-rose-500", activeStyle: "bg-rose-500/15 border-rose-500/60 text-white shadow-sm shadow-rose-500/20", limit: 500 },
 ];
 
 const YOUTUBE_CATEGORIES = [
@@ -75,6 +78,17 @@ export default function PostComposerModal({
   const [disableComment, setDisableComment] = useState(false);
   const [disableDuet, setDisableDuet] = useState(false);
   const [disableStitch, setDisableStitch] = useState(false);
+
+  // Instagram / Facebook / Threads options
+  const [placement, setPlacement] = useState("reels");
+  const [shareToFeed, setShareToFeed] = useState(true);
+
+  // Pinterest options
+  const [destinationLink, setDestinationLink] = useState("");
+  const [boardId, setBoardId] = useState("");
+
+  // X (Twitter) options
+  const [replySettings, setReplySettings] = useState("everyone");
 
   // Scheduling
   const [isScheduled, setIsScheduled] = useState(true);
@@ -206,6 +220,11 @@ export default function PostComposerModal({
         disableStitch,
         categoryId,
         madeForKids,
+        placement,
+        shareToFeed,
+        destinationLink,
+        boardId,
+        replySettings,
       };
 
       const url = initialPost?.id ? `/api/posts/${initialPost.id}` : "/api/posts";
@@ -301,7 +320,7 @@ export default function PostComposerModal({
               <label className="text-xs font-bold text-zinc-300 tracking-wider uppercase block">
                 1. SELECT PUBLISHING CHANNEL
               </label>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PLATFORMS.map((plat) => {
                   const Icon = plat.Icon;
                   const isSelected = selectedPlatform === plat.key;
@@ -542,7 +561,100 @@ export default function PostComposerModal({
                     </div>
                   )}
 
-                  {(selectedPlatform !== "youtube" && selectedPlatform !== "tiktok") && (
+                  {selectedPlatform === "instagram" && (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[11px] font-medium text-zinc-400 block mb-1">
+                          Placement
+                        </label>
+                        <select
+                          value={placement}
+                          onChange={(e) => setPlacement(e.target.value)}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-700"
+                        >
+                          <option value="reels">Reels</option>
+                          <option value="feed">Feed Post</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-zinc-300">
+                        <span>Share Reels to Main Feed</span>
+                        <input
+                          type="checkbox"
+                          checked={shareToFeed}
+                          onChange={(e) => setShareToFeed(e.target.checked)}
+                          className="rounded border-zinc-700 bg-zinc-900 text-pink-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPlatform === "facebook" && (
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-[11px] font-medium text-zinc-400 block mb-1">
+                          Placement
+                        </label>
+                        <select
+                          value={placement}
+                          onChange={(e) => setPlacement(e.target.value)}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-700"
+                        >
+                          <option value="timeline">Timeline Post</option>
+                          <option value="reels">Facebook Reels</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPlatform === "x_twitter" && (
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-[11px] font-medium text-zinc-400 block mb-1">
+                          Who can reply
+                        </label>
+                        <select
+                          value={replySettings}
+                          onChange={(e) => setReplySettings(e.target.value)}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-700"
+                        >
+                          <option value="everyone">Everyone</option>
+                          <option value="following">Accounts you follow</option>
+                          <option value="mentionedUsers">Only accounts you mention</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPlatform === "pinterest" && (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[11px] font-medium text-zinc-400 block mb-1">
+                          Destination Link
+                        </label>
+                        <input
+                          type="url"
+                          value={destinationLink}
+                          onChange={(e) => setDestinationLink(e.target.value)}
+                          placeholder="https://yourwebsite.com/pin-link"
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-700"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-medium text-zinc-400 block mb-1">
+                          Board ID / Name (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={boardId}
+                          onChange={(e) => setBoardId(e.target.value)}
+                          placeholder="Default Board or ID"
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-md px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-700"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {(selectedPlatform === "linkedin" || selectedPlatform === "threads") && (
                     <p className="text-xs text-zinc-400">
                       Standard optimization and formatting will be automatically applied for {currentPlatformInfo.name}.
                     </p>

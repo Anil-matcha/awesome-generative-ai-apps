@@ -4,7 +4,9 @@ import { useState, useMemo } from "react";
 import { 
   FaYoutube, 
   FaInstagram, 
+  FaFacebook,
   FaLinkedin, 
+  FaPinterest,
   FaChevronLeft, 
   FaChevronRight, 
   FaPlus,
@@ -50,6 +52,14 @@ const PLATFORM_CONFIG = {
     borderAccent: "border-l-2 border-l-sky-400",
     activePill: "bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm shadow-sky-500/20" 
   },
+  facebook: { 
+    name: "Facebook", 
+    Icon: FaFacebook, 
+    color: "text-blue-600", 
+    cardBg: "bg-blue-600/[0.08] hover:bg-blue-600/[0.14] border-blue-600/30 hover:border-blue-600/50",
+    borderAccent: "border-l-2 border-l-blue-600",
+    activePill: "bg-blue-600/20 text-blue-400 border border-blue-600/40 shadow-sm shadow-blue-600/20" 
+  },
   linkedin: { 
     name: "LinkedIn", 
     Icon: FaLinkedin, 
@@ -65,6 +75,14 @@ const PLATFORM_CONFIG = {
     cardBg: "bg-purple-500/[0.08] hover:bg-purple-500/[0.14] border-purple-500/30 hover:border-purple-500/50",
     borderAccent: "border-l-2 border-l-purple-400",
     activePill: "bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-sm shadow-purple-500/20" 
+  },
+  pinterest: { 
+    name: "Pinterest", 
+    Icon: FaPinterest, 
+    color: "text-rose-500", 
+    cardBg: "bg-rose-500/[0.08] hover:bg-rose-500/[0.14] border-rose-500/30 hover:border-rose-500/50",
+    borderAccent: "border-l-2 border-l-rose-500",
+    activePill: "bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-sm shadow-rose-500/20" 
   },
 };
 
@@ -234,7 +252,7 @@ export default function ContentCalendar({
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap justify-between sm:justify-end">
           {/* Platform Filter Pills */}
           <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs">
-            {["all", "youtube", "tiktok", "instagram", "x_twitter", "linkedin"].map((platKey) => {
+            {["all", "youtube", "tiktok", "instagram", "x_twitter", "facebook", "linkedin", "threads", "pinterest"].map((platKey) => {
               const isActive = platformFilter === platKey;
               const plat = PLATFORM_CONFIG[platKey];
               const Icon = plat?.Icon;
@@ -252,7 +270,7 @@ export default function ContentCalendar({
                   }`}
                 >
                   {Icon && <Icon className={`text-[11px] ${isActive ? "text-current" : plat.color}`} />}
-                  <span className="capitalize">{platKey === "x_twitter" ? "X" : platKey}</span>
+                  <span className="capitalize">{platKey === "x_twitter" ? "X" : plat?.name || platKey}</span>
                 </button>
               );
             })}
