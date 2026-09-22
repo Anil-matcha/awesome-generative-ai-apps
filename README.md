@@ -35,12 +35,12 @@ A free, open-source AI social media scheduler built with Next.js. Upload videos,
 |----------|--------|
 | YouTube | ✅ Live |
 | TikTok | ✅ Live |
+| Instagram (Reels & Posts) | ✅ Live |
+| Facebook (Pages & Reels) | ✅ Live |
 | X (Twitter) | ✅ Live |
 | LinkedIn | ✅ Live |
-| Instagram Reels | 🔜 Coming Soon |
-| Facebook Reels | 🔜 Coming Soon |
-| Threads | 🔜 Coming Soon |
-| Pinterest | 🔜 Coming Soon |
+| Threads | ✅ Live |
+| Pinterest | ✅ Live |
 
 ## Features
 
