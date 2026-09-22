@@ -35,31 +35,38 @@ A free, open-source AI social media scheduler built with Next.js. Upload videos,
 |----------|--------|
 | YouTube | ✅ Live |
 | TikTok | ✅ Live |
+| X (Twitter) | ✅ Live |
+| LinkedIn | ✅ Live |
 | Instagram Reels | 🔜 Coming Soon |
 | Facebook Reels | 🔜 Coming Soon |
-| X (Twitter) | 🔜 Coming Soon |
-| LinkedIn | 🔜 Coming Soon |
 | Threads | 🔜 Coming Soon |
 | Pinterest | 🔜 Coming Soon |
 
 ## Features
 
-- **Video Scheduling** — paste a media URL, pick a platform and time, publish automatically
-- **Multi-account** — connect and manage multiple YouTube and TikTok accounts
-- **YouTube controls** — category, privacy (public/private/unlisted), made-for-kids flag
-- **TikTok controls** — privacy, disable comments/duets/stitches
-- **Credits system** — Stripe-powered credits for scheduling posts
-- **Post history** — track scheduled, published, and failed posts with status and published URLs
-- **Self-hostable** — single Next.js app, no microservices, no complex infra
+- **AI Social Marketing Agent** (`/agents`) — conversational AI marketing assistant with persistent context memory across conversations:
+  - **3-Panel Workspace** — multi-channel selector on the left, interactive chat in the center, and conversation history threads on the right.
+  - **Platform-Tailored Copy** — generates viral hooks, high-converting captions, and hashtag strategies tailored to specific character limits and algorithms.
+  - **1-Click Post Proposals** — prepares structured post cards ready to open in the Composer and schedule with one click.
+  - **Rich Markdown Rendering** — full typography with headings, styled bullet points, code blocks, and expandable JSON payloads.
+  - **Context Memory** — retains tone, campaign guidelines, and brand instructions across the last 10 messages.
+- **Video & Post Scheduling** — upload media or paste a URL, pick target platforms and times, and publish automatically.
+- **Multi-Account Management** — connect and manage multiple social accounts (YouTube, TikTok, X, LinkedIn) from a unified dashboard.
+- **YouTube Controls** — category selection, privacy (public/private/unlisted), made-for-kids flags.
+- **TikTok Controls** — privacy settings, comment, duet, and stitch toggles.
+- **Credits System** — Stripe-powered pay-as-you-go credits for scheduling posts.
+- **Post History & Calendar** — track scheduled, published, and failed posts with status indicators and direct published URLs.
+- **Self-Hostable** — single Next.js 16 app with Turbopack, no microservices or complex external infra required.
 
 ## Tech Stack
 
-- **Framework:** Next.js 16
+- **Framework:** Next.js 16 (App Router + Turbopack)
 - **Auth:** NextAuth.js (Google OAuth)
-- **Database:** PostgreSQL + Prisma
+- **Database:** PostgreSQL + Prisma ORM
 - **Payments:** Stripe
 - **AI / Publishing:** MuAPI
-- **Styling:** Tailwind CSS
+- **Markdown:** `react-markdown` + `remark-gfm`
+- **Styling:** Tailwind CSS + Framer Motion
 
 ## Quick Start
 
