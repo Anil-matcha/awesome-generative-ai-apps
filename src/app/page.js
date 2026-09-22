@@ -29,6 +29,7 @@ export default function WorkspaceDashboard() {
 
   // Composer Modal State
   const [composerOpen, setComposerOpen] = useState(false);
+  const [openWithAi, setOpenWithAi] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
 
@@ -62,6 +63,7 @@ export default function WorkspaceDashboard() {
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setEditingPost(null);
+    setOpenWithAi(false);
     setComposerOpen(true);
   };
 
@@ -72,12 +74,21 @@ export default function WorkspaceDashboard() {
   const handleNewPost = () => {
     setSelectedDate(null);
     setEditingPost(null);
+    setOpenWithAi(false);
+    setComposerOpen(true);
+  };
+
+  const handleWriteWithAi = () => {
+    setSelectedDate(null);
+    setEditingPost(null);
+    setOpenWithAi(true);
     setComposerOpen(true);
   };
 
   const handleEditPost = (post) => {
     setViewingPost(null);
     setEditingPost(post);
+    setOpenWithAi(false);
     setComposerOpen(true);
   };
 
@@ -193,10 +204,10 @@ export default function WorkspaceDashboard() {
   return (
     <div className="min-h-screen bg-bg-page text-zinc-100 p-4 sm:p-6 lg:p-8 space-y-6 pb-20">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Clean, Minimal Header */}
+        {/* Clean, Vibrant Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/60">
           <div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-zinc-100 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-indigo-300">
               Content Calendar
             </h1>
             <p className="text-xs text-zinc-400 mt-0.5">
@@ -205,13 +216,22 @@ export default function WorkspaceDashboard() {
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap justify-between sm:justify-end">
-            {/* Minimal Stats Pill */}
-            <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-zinc-900/60 border border-zinc-800/80 text-xs text-zinc-400">
-              <span><strong className="text-zinc-200 font-semibold">{scheduledCount}</strong> scheduled</span>
+            {/* Vibrant Stats Pill */}
+            <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-zinc-900/80 border border-zinc-800 text-xs text-zinc-300 shadow-sm">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-400 shadow-sm shadow-blue-400/50 animate-pulse" />
+                <strong className="text-blue-400 font-bold">{scheduledCount}</strong> scheduled
+              </span>
               <span className="text-zinc-700">|</span>
-              <span><strong className="text-zinc-200 font-semibold">{publishedCount}</strong> published</span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" />
+                <strong className="text-emerald-400 font-bold">{publishedCount}</strong> published
+              </span>
               <span className="text-zinc-700">|</span>
-              <span><strong className="text-zinc-200 font-semibold">{uniqueChannels}</strong> channels</span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-purple-400 shadow-sm shadow-purple-400/50" />
+                <strong className="text-purple-400 font-bold">{uniqueChannels}</strong> channels
+              </span>
             </div>
 
             <button
@@ -223,8 +243,16 @@ export default function WorkspaceDashboard() {
             </button>
 
             <button
+              onClick={handleWriteWithAi}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-violet-400/30 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-violet-600/25 active:scale-95"
+            >
+              <FaBolt className="text-[11px] text-amber-300" />
+              <span>Write with AI</span>
+            </button>
+
+            <button
               onClick={handleNewPost}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-200 transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 border border-indigo-500/40 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-indigo-600/25 active:scale-95"
             >
               <FiPlus className="text-xs" />
               <span>New Post</span>
@@ -254,13 +282,20 @@ export default function WorkspaceDashboard() {
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[11px] font-medium uppercase tracking-wider bg-zinc-800 text-zinc-200">
+                <span className={`px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider ${
+                  viewingPost.platform === "youtube" ? "bg-red-500/20 text-red-400 border border-red-500/30" :
+                  viewingPost.platform === "instagram" ? "bg-pink-500/20 text-pink-400 border border-pink-500/30" :
+                  viewingPost.platform === "tiktok" ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" :
+                  viewingPost.platform === "linkedin" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" :
+                  viewingPost.platform === "threads" ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
+                  "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                }`}>
                   {viewingPost.platform}
                 </span>
-                <span className={`text-[11px] font-medium px-2 py-0.5 rounded ${
+                <span className={`text-[11px] font-medium px-2.5 py-0.5 rounded ${
                   viewingPost.status === "completed" 
-                    ? "bg-emerald-500/10 text-emerald-400" 
-                    : "bg-blue-500/10 text-blue-400"
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
+                    : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                 }`}>
                   {viewingPost.status}
                 </span>
@@ -292,7 +327,7 @@ export default function WorkspaceDashboard() {
                 {viewingPost.description || "No description provided."}
               </p>
               {viewingPost.tags && (
-                <p className="text-xs text-zinc-400 font-mono">
+                <p className="text-xs text-indigo-400 font-mono">
                   {viewingPost.tags.split(",").map(t => `#${t.trim()}`).join(" ")}
                 </p>
               )}
@@ -334,7 +369,7 @@ export default function WorkspaceDashboard() {
                 <button
                   type="button"
                   onClick={() => handleEditPost(viewingPost)}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/25 active:scale-95"
                 >
                   <FiEdit2 /> Edit
                 </button>
@@ -351,10 +386,12 @@ export default function WorkspaceDashboard() {
           setComposerOpen(false);
           setSelectedDate(null);
           setEditingPost(null);
+          setOpenWithAi(false);
         }}
         initialDate={selectedDate}
         initialPost={editingPost}
         onPostSaved={handlePostSaved}
+        initialOpenAiWriter={openWithAi}
       />
     </div>
   );

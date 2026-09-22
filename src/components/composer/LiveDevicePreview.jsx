@@ -34,11 +34,12 @@ export default function LiveDevicePreview({
   const handle = "@" + displayAccount.toLowerCase().replace(/[^a-z0-9_]/g, "");
 
   const previewTabs = [
-    { key: "youtube", name: "YouTube", Icon: FaYoutube, color: "text-red-500" },
-    { key: "tiktok", name: "TikTok", Icon: SiTiktok, color: "text-cyan-400" },
-    { key: "instagram", name: "Instagram", Icon: FaInstagram, color: "text-pink-500" },
-    { key: "x_twitter", name: "X", Icon: FaXTwitter, color: "text-zinc-200" },
-    { key: "linkedin", name: "LinkedIn", Icon: FaLinkedin, color: "text-sky-500" },
+    { key: "youtube", name: "YouTube", Icon: FaYoutube, color: "text-red-500", activeStyle: "bg-red-500/20 text-red-400 border border-red-500/40 shadow-sm shadow-red-500/20" },
+    { key: "tiktok", name: "TikTok", Icon: SiTiktok, color: "text-cyan-400", activeStyle: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm shadow-cyan-500/20" },
+    { key: "instagram", name: "Instagram", Icon: FaInstagram, color: "text-pink-500", activeStyle: "bg-pink-500/20 text-pink-400 border border-pink-500/40 shadow-sm shadow-pink-500/20" },
+    { key: "x_twitter", name: "X", Icon: FaXTwitter, color: "text-sky-400", activeStyle: "bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm shadow-sky-500/20" },
+    { key: "linkedin", name: "LinkedIn", Icon: FaLinkedin, color: "text-blue-500", activeStyle: "bg-blue-500/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/20" },
+    { key: "threads", name: "Threads", Icon: FaThreads, color: "text-purple-400", activeStyle: "bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-sm shadow-purple-500/20" },
   ];
 
   return (
@@ -46,12 +47,12 @@ export default function LiveDevicePreview({
       {/* Header & Platform Switcher Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-zinc-800/80 gap-2">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-[11px] font-medium text-zinc-400">
-            Feed Preview
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
+          <span className="text-[11px] font-semibold text-zinc-300">
+            Live Feed Mockup
           </span>
         </div>
-        <div className="flex items-center gap-1 bg-zinc-900/80 p-0.5 rounded-lg border border-zinc-800 flex-wrap">
+        <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 flex-wrap">
           {previewTabs.map((tab) => {
             const Icon = tab.Icon;
             const isActive = activePreviewTab === tab.key;
@@ -60,14 +61,14 @@ export default function LiveDevicePreview({
                 key={tab.key}
                 type="button"
                 onClick={() => setActivePreviewTab(tab.key)}
-                className={`p-1 px-2 rounded-md text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer ${
+                className={`p-1 px-2 rounded-md text-[11px] font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                   isActive
-                    ? "bg-zinc-800 text-zinc-100"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? tab.activeStyle
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                 }`}
                 title={`Preview on ${tab.name}`}
               >
-                <Icon className={`text-xs ${tab.color}`} />
+                <Icon className={`text-xs ${isActive ? "text-current" : tab.color}`} />
                 <span>{tab.name}</span>
               </button>
             );

@@ -25,14 +25,15 @@ import {
   FiInfo
 } from "react-icons/fi";
 import LiveDevicePreview from "./LiveDevicePreview";
+import AiPostWriter from "./AiPostWriter";
 
 const PLATFORMS = [
-  { key: "youtube", name: "YouTube", Icon: FaYoutube, color: "text-red-500", bg: "bg-red-500/10 border-red-500/30", limit: 5000 },
-  { key: "tiktok", name: "TikTok", Icon: SiTiktok, color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/30", limit: 2200 },
-  { key: "instagram", name: "Instagram", Icon: FaInstagram, color: "text-pink-500", bg: "bg-pink-500/10 border-pink-500/30", limit: 2200 },
-  { key: "x_twitter", name: "X (Twitter)", Icon: FaXTwitter, color: "text-zinc-200", bg: "bg-zinc-700/20 border-zinc-600/30", limit: 280 },
-  { key: "linkedin", name: "LinkedIn", Icon: FaLinkedin, color: "text-sky-500", bg: "bg-sky-500/10 border-sky-500/30", limit: 3000 },
-  { key: "threads", name: "Threads", Icon: FaThreads, color: "text-zinc-300", bg: "bg-zinc-700/20 border-zinc-600/30", limit: 500 },
+  { key: "youtube", name: "YouTube", Icon: FaYoutube, color: "text-red-500", activeStyle: "bg-red-500/15 border-red-500/60 text-white shadow-sm shadow-red-500/20", limit: 5000 },
+  { key: "tiktok", name: "TikTok", Icon: SiTiktok, color: "text-cyan-400", activeStyle: "bg-cyan-500/15 border-cyan-400/60 text-white shadow-sm shadow-cyan-500/20", limit: 2200 },
+  { key: "instagram", name: "Instagram", Icon: FaInstagram, color: "text-pink-500", activeStyle: "bg-pink-500/15 border-pink-500/60 text-white shadow-sm shadow-pink-500/20", limit: 2200 },
+  { key: "x_twitter", name: "X (Twitter)", Icon: FaXTwitter, color: "text-sky-400", activeStyle: "bg-sky-500/15 border-sky-400/60 text-white shadow-sm shadow-sky-500/20", limit: 280 },
+  { key: "linkedin", name: "LinkedIn", Icon: FaLinkedin, color: "text-blue-500", activeStyle: "bg-blue-500/15 border-blue-500/60 text-white shadow-sm shadow-blue-500/20", limit: 3000 },
+  { key: "threads", name: "Threads", Icon: FaThreads, color: "text-purple-400", activeStyle: "bg-purple-500/15 border-purple-400/60 text-white shadow-sm shadow-purple-500/20", limit: 500 },
 ];
 
 const YOUTUBE_CATEGORIES = [
@@ -54,6 +55,7 @@ export default function PostComposerModal({
   onClose,
   initialDate = null,
   initialPost = null,
+  initialOpenAiWriter = false,
   onPostSaved,
 }) {
   const [selectedPlatform, setSelectedPlatform] = useState("youtube");
@@ -83,8 +85,15 @@ export default function PostComposerModal({
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [aiWriterOpen, setAiWriterOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (initialOpenAiWriter) {
+      setAiWriterOpen(true);
+    }
+  }, [initialOpenAiWriter, isOpen]);
 
   useEffect(() => {
     if (initialPost) {
@@ -114,6 +123,14 @@ export default function PostComposerModal({
       setIsScheduled(true);
     }
   }, [initialDate, initialPost, isOpen]);
+
+  const handleApplyAiContent = ({ title: newTitle, description: newDescription, tags: newTags }) => {
+    if (newTitle) setTitle(newTitle);
+    if (newDescription) setDescription(newDescription);
+    if (newTags) setTags(newTags);
+    setAiWriterOpen(false);
+  };
+
 
   if (!isOpen) return null;
 
@@ -231,19 +248,42 @@ export default function PostComposerModal({
               Multi-channel scheduling with live preview
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-7 h-7 rounded-md hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <FiX className="text-sm" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAiWriterOpen(!aiWriterOpen)}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                aiWriterOpen
+                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-400/40 shadow-md shadow-violet-500/30"
+                  : "bg-gradient-to-r from-violet-600/15 to-indigo-600/15 text-violet-300 border-violet-500/30 hover:border-violet-500/60 hover:text-white"
+              }`}
+            >
+              <FaMagic className="text-[10px] text-amber-300" />
+              <span>Write with AI</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-7 h-7 rounded-md hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <FiX className="text-sm" />
+            </button>
+          </div>
         </div>
 
         {/* Modal Main Content - 2 Column Split */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-zinc-800">
           {/* LEFT COLUMN: Composer Form (7 cols) */}
           <div className="lg:col-span-7 p-5 space-y-4 overflow-y-auto overflow-x-hidden max-h-[calc(88vh-110px)]">
+            {/* AI Post Writer Assistant (Collapsible) */}
+            {aiWriterOpen && (
+              <AiPostWriter
+                platform={selectedPlatform}
+                onApply={handleApplyAiContent}
+                onClose={() => setAiWriterOpen(false)}
+              />
+            )}
+
             {errorMsg && (
               <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-400 flex items-center gap-2">
                 <FiInfo className="text-sm shrink-0" />
@@ -265,14 +305,14 @@ export default function PostComposerModal({
                       key={plat.key}
                       type="button"
                       onClick={() => setSelectedPlatform(plat.key)}
-                      className={`p-1.5 px-2 rounded-lg border flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                      className={`p-1.5 px-2 rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         isSelected
-                          ? "border-zinc-600 bg-zinc-800 text-zinc-100 font-medium"
+                          ? plat.activeStyle
                           : "border-zinc-800/80 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                       }`}
                     >
-                      <Icon className={`text-xs ${plat.color}`} />
-                      <span className="text-[11px] truncate">
+                      <Icon className={`text-xs ${isSelected ? "text-current" : plat.color}`} />
+                      <span className="text-[11px] truncate font-medium">
                         {plat.name}
                       </span>
                     </button>
@@ -298,9 +338,22 @@ export default function PostComposerModal({
             {/* Caption & Content */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-zinc-400">
-                  Caption & Details
-                </label>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-medium text-zinc-400">
+                    Caption & Details
+                  </label>
+                  {!aiWriterOpen && (
+                    <button
+                      type="button"
+                      onClick={() => setAiWriterOpen(true)}
+                      className="text-[11px] text-violet-400 hover:text-violet-300 font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                      title="Write post with AI"
+                    >
+                      <FaMagic className="text-[9px] text-amber-300" />
+                      <span>Write with AI</span>
+                    </button>
+                  )}
+                </div>
                 <span className={`text-[11px] font-mono ${currentChars > charLimit ? "text-red-400 font-semibold" : "text-zinc-500"}`}>
                   {currentChars} / {charLimit}
                 </span>
@@ -315,15 +368,15 @@ export default function PostComposerModal({
 
               {/* Hashtag Quick Chips */}
               <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                <span className="text-[11px] text-zinc-500 flex items-center gap-1 mr-1">
-                  <FaMagic className="text-zinc-400 text-[10px]" /> Tags:
+                <span className="text-[11px] text-zinc-400 flex items-center gap-1 mr-1 font-medium">
+                  <FaMagic className="text-violet-400 text-[10px]" /> Tags:
                 </span>
                 {POPULAR_HASHTAGS.map((tag) => (
                   <button
                     key={tag}
                     type="button"
                     onClick={() => addHashtag(tag)}
-                    className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer font-mono"
+                    className="px-2 py-0.5 rounded bg-zinc-900/80 hover:bg-indigo-500/10 border border-zinc-800 hover:border-indigo-500/40 text-[11px] text-zinc-400 hover:text-indigo-300 transition-all cursor-pointer font-mono"
                   >
                     {tag}
                   </button>
@@ -586,11 +639,11 @@ export default function PostComposerModal({
               type="button"
               disabled={submitting}
               onClick={() => handleSubmit()}
-              className="px-4 py-1.5 rounded-lg text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-indigo-500/25 active:scale-95 disabled:opacity-50"
             >
               {submitting ? (
                 <>
-                  <div className="w-3 h-3 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Saving...</span>
                 </>
               ) : (
