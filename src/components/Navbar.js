@@ -29,6 +29,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Calendar", path: "/" },
     { name: "Channels", path: "/integrations" },
+    { name: "Agent", path: "/agents" },
     { name: "Gallery", path: "/gallery" },
     { name: "Pricing", path: "/pricing" },
   ];
