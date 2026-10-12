@@ -54,6 +54,7 @@ Each app is a fully working product you can launch under your own name this week
 ---
 
 ## Related Projects
+- [Raphael AI](https://raphael.app) — Free AI image generator (Seedream, Nano Banana, GPT Image). No credit card for basic generations.
 
 - [awesome-vibecoded-saas](https://github.com/Anil-matcha/awesome-vibecoded-saas) — broader catalog of open-source SaaS alternatives; this repo remains the focused generative-AI application list.
 - [Muapi open-source alternatives](https://muapi.ai/open-source/alternative) — app-first comparisons for selected open-source alternatives in the wider ecosystem.
