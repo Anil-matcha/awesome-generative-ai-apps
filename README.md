@@ -249,6 +249,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 |---|---|---|---|
 | [EstateStager AI](./home_real_estate/ai-real-estate-stager) · [↗ GitHub](https://github.com/SamurAIGPT/ai-real-estate-stager) | Turn empty rooms into furnished showrooms with AI | BoxBrownie ($32/room), Virtual Staging AI ($29/image) | [Demo](https://ai-real-estate-stager.vercel.app/) |
 | [AI Room Declutter](./home_real_estate/ai-room-declutter) · [↗ GitHub](https://github.com/SamurAIGPT/ai-room-declutter) | Transform messy rooms into photorealistic clean interiors | RoomGPT ($10/mo), Reimagine Home ($15/mo) | [Demo](https://ai-room-declutter.vercel.app/) |
+| [Spaceora](https://spaceora.app) | AI room and garden designer — redesign interiors, virtually stage, and plan landscapes from a single photo. | — | [Demo](https://spaceora.app) |
 
 ---
 
