@@ -192,6 +192,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12â€
 
 ## ðŸŽ¬ Video Generation
 
+- [Ideoy](https://ideoy.ai) - Remake this week's meme videos with one selfie (AI image-to-video, freemium, adults only).
 **The market:** Opus Clip (video clipping) raised $10M and reportedly hit $20M+ ARR. Runway raised $236M. The AI video tools market is projected at $2B+ by 2027. Clipping and short-form tools are the highest-demand entry point.
 
 | Template | Description | Competing With | Demo |
