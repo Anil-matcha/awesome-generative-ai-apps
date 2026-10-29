@@ -333,3 +333,5 @@ Base template (auth + billing + webhooks, no AI logic):
 ## 📄 License
 
 MIT Licensed. Fork it, ship it, sell it.
+
+- [BrightWire News](https://www.brightwire.news) & [AI Tech Stack Advisor](https://www.brightwire.news/tech-stack) - AI-curated positive journalism from 300+ global sources with neural audio narration, plus a free interactive AI Tech Stack Advisor for developers.
