@@ -172,6 +172,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 | [Open AI Agents Hub](https://github.com/Anil-matcha/open-ai-agents-hub) | Self-hosted platform for reusable chat, image, video, and audio agents with an agent library and builder | Dify, Botpress, AnythingLLM | ⭐ 14 |
 | [Vibe Workflow](https://github.com/SamurAIGPT/Vibe-Workflow) | Node-based AI workflow builder for generative image & video pipelines | Weavy, Krea Nodes, FloraFauna AI | ⭐ 507 |
 | [PixelRelay](https://github.com/SamurAIGPT/pixelrelay) | Self-hosted unified API for generative media — one webhook endpoint across Fal, Replicate, with failover | fal.ai, Replicate, Together | ⭐ 14 |
+| [OpenMontage Drama Studio](https://github.com/charliewwdev/OpenMontage) | Self-hosted AI short-drama studio: script, characters, scenes, props, storyboard, voice and edit as versioned stages; shots reference reference-image assets for consistency. AGPL-3.0. | Hosted AI video/short-drama tools | ⭐ 15 |
 
 ---
 
