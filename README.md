@@ -161,6 +161,8 @@ Or deploy instantly with the **Deploy to Vercel** button in each template's READ
 
 ## 🌐 Open-Source AI Platforms
 
+- [No Stairs Please MCP](https://nostairsplease.com/mcp) - Remote MCP server exposing structured live-music venue, load-in accessibility, and talent-buyer contact data for 2,200+ North American venues.
+
 Full-stack platforms you can self-host or white-label. Leonardo AI charges $12–$60/mo. OpenArt charges $9–$57/mo. Krea charges $10–$35/mo. Freepik AI (with Magnific) runs $8–$50/mo. These open-source alternatives let you capture that same revenue with zero licensing fees.
 
 | App | Description | Competing With | Stars |
