@@ -240,6 +240,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 | [Amazon Product Studio](./ecommerce/amazon-product-studio) · [↗ GitHub](https://github.com/SamurAIGPT/amazon-product-studio) | Studio-quality product photos from reference images | Flair AI ($10+/mo), Booth AI ($20+/mo), Photoroom ($79/mo for teams) | [Demo](https://amazon-product-studio.vercel.app/) |
 
 ---
+- [CreoArt AI Product Photography](https://creoart.app/tools/ai-product-photography) - Pay-as-you-go private AI product photography & packshot studio (45 models including Seedream 5.5, GPT Image 2.6, Nano Banana 2.1; no monthly subscription, zero public gallery).
 
 ## 🏠 Home & Real Estate AI
 
