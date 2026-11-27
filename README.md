@@ -308,6 +308,7 @@ Full-stack platforms you can self-host or white-label. Leonardo AI charges $12�
 
 | Template | Description | Competing With | Demo |
 |---|---|---|---|
+| [AshuTeacher](https://github.com/sanzaya-p/ashuteacher) | Interactive AI Voice Blackboard, 195-country syllabus academy, PDF/photo exam solver & 6-milestone Thesis Research Studio with Live AI Viva Defense | Khanmigo, NotebookLM | [Live Demo](https://ashuteacher.vercel.app) |
 | [My Podcast Studio](./ai_agents/my-podcast) · [↗ GitHub](https://github.com/SamurAIGPT/my-podcast) | AI voiceover and podcast narration with MiniMax Speech 2.6 | ElevenLabs ($5–$99/mo, $80M ARR), Murf AI ($29/mo) | [Demo](https://my-podcast.vercel.app/) |
 | [AI Voice Agent](./ai_agents/AI-Voice-Agent) · [↗ GitHub](https://github.com/Anil-matcha/AI-Voice-Agent) | Self-hosted AI voice agent with speech-to-speech conversation | Bland.ai ($0.09/min), Vapi ($0.05/min), Retell AI ($0.07/min) | — |
 
